@@ -1,0 +1,22 @@
+<%#
+ * partials/head.ejs
+ * Everything that opens an HTML page: head tags, navbar and flash alerts.
+ * Every page starts by including this partial.
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= (typeof title !== 'undefined' && title) ? title + ' | CampusFlow' : 'CampusFlow' %></title>
+
+  <!-- Bootstrap 5 CSS + icons (vendored in /vendor so pages are styled
+       instantly, even offline or when the CDN is slow/down) -->
+  <link href="/vendor/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<%- include('navbar') %>
+<%- include('alerts') %>

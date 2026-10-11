@@ -1,0 +1,57 @@
+<%- include('../partials/head') %>
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-lg-2 col-md-3">
+      <%- include('../partials/sidebar', { sidebarSection: 'complaints' }) %>
+    </div>
+
+    <div class="col-lg-10 col-md-9">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small mb-1">
+          <li class="breadcrumb-item"><a href="/staff">Dashboard</a></li>
+          <li class="breadcrumb-item active">Complaints</li>
+        </ol>
+      </nav>
+      <h1 class="h4 fw-bold mb-3">Complaints</h1>
+
+      <!-- scope tabs: mine / unassigned / all -->
+      <ul class="nav nav-pills mb-3 flex-wrap gap-1">
+        <li class="nav-item">
+          <a class="nav-link py-1 px-3 <%= scope === 'mine' ? 'active' : 'border' %>"
+             href="/staff/complaints?scope=mine">Assigned to me</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link py-1 px-3 <%= scope === 'unassigned' ? 'active' : 'border' %>"
+             href="/staff/complaints?scope=unassigned">Unassigned pool</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link py-1 px-3 <%= scope === 'all' ? 'active' : 'border' %>"
+             href="/staff/complaints?scope=all">All complaints</a>
+        </li>
+      </ul>
+
+      <%- include('../partials/complaintFilters', {
+        filterAction: '/staff/complaints',
+        showLocation: true,
+        showAssigneeFilter: false,
+        listScope: scope
+      }) %>
+
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <strong><%= totalItems %> complaint(s) found</strong>
+          <% if (scope === 'unassigned') { %>
+            <span class="small text-muted">Open a ticket and click "Accept" to take it.</span>
+          <% } %>
+        </div>
+        <%- include('../partials/complaintTable', { showReporter: true, showAssignForm: false }) %>
+      </div>
+
+      <%- include('../partials/pagination') %>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

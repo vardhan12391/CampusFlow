@@ -1,0 +1,319 @@
+<%- include('../partials/head') %>
+
+<%
+  const statusClass = {
+    'Submitted': 'bg-secondary',
+    'Assigned': 'bg-info text-dark',
+    'In Progress': 'bg-primary',
+    'Resolved': 'bg-success',
+    'Closed': 'bg-dark'
+  };
+%>
+
+<div class="container py-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item">
+        <a href="<%= currentUser.role === 'admin' ? '/admin' : currentUser.role === 'staff' ? '/staff' : '/student' %>">Dashboard</a>
+      </li>
+      <li class="breadcrumb-item active"><%= complaint.ticketId %></li>
+    </ol>
+  </nav>
+
+  <!-- Header -->
+  <div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+      <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+        <div>
+          <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+            <span class="fs-5 fw-bold text-primary"><%= complaint.ticketId %></span>
+            <span class="badge <%= statusClass[complaint.status] %>"><%= complaint.status %></span>
+            <%- include('../partials/badges', { badgeType: 'priority', value: complaint.priority }) %>
+            <% if (complaint.isEscalated) { %>
+              <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i>Escalated</span>
+            <% } %>
+          </div>
+          <h1 class="h4 fw-bold mb-1"><%= complaint.title %></h1>
+          <p class="text-muted small mb-0">
+            <i class="bi bi-tag me-1"></i><%= complaint.category %>
+            &nbsp;&middot;&nbsp;
+            <i class="bi bi-geo-alt me-1"></i><%= complaint.location %>
+          </p>
+        </div>
+
+        <% if (currentUser.role === 'staff' && !complaint.assignedTo && complaint.status === 'Submitted') { %>
+          <form action="/complaints/<%= complaint._id %>/accept" method="POST">
+            <button class="btn btn-success px-4" type="submit">
+              <i class="bi bi-hand-index-thumb me-1"></i>Accept this complaint
+            </button>
+          </form>
+        <% } %>
+      </div>
+
+      <% if (complaint.isEscalated) { %>
+        <div class="alert alert-danger mt-3 mb-0 py-2 small">
+          <i class="bi bi-exclamation-octagon-fill me-1"></i>
+          This complaint was escalated automatically on <%= formatDate(complaint.escalatedAt) %>
+          because a high priority issue stayed open longer than allowed.
+        </div>
+      <% } %>
+
+      <% if (complaint.status === 'Resolved' && isReporter) { %>
+        <div class="alert alert-success mt-3 mb-0">
+          <strong>Was your issue resolved?</strong>
+          <div class="d-flex gap-2 mt-2 flex-wrap">
+            <form action="/complaints/<%= complaint._id %>/confirm" method="POST" class="d-inline">
+              <input type="hidden" name="action" value="close">
+              <button class="btn btn-success btn-sm px-3" type="submit">
+                <i class="bi bi-check-lg me-1"></i>Yes, close complaint
+              </button>
+            </form>
+            <form action="/complaints/<%= complaint._id %>/confirm" method="POST" class="d-inline">
+              <input type="hidden" name="action" value="reopen">
+              <button class="btn btn-outline-danger btn-sm px-3" type="submit">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>No, reopen complaint
+              </button>
+            </form>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <!-- ==================== left column ==================== -->
+    <div class="col-lg-8">
+      <!-- description -->
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-header bg-white"><strong>Description</strong></div>
+        <div class="card-body">
+          <!-- white-space: pre-line keeps the student's line breaks -->
+          <p class="mb-0" style="white-space: pre-line;"><%= complaint.description %></p>
+
+          <% if (complaint.imageUrl) { %>
+            <hr>
+            <a href="<%= complaint.imageUrl %>" target="_blank">
+              <img src="<%= complaint.imageUrl %>" alt="Photo attached to <%= complaint.ticketId %>"
+                   class="img-fluid rounded border" style="max-height: 320px;">
+            </a>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- timeline -->
+      <div class="card border-0 shadow-sm mb-3" id="timeline">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <strong><i class="bi bi-clock-history me-1"></i>Activity &amp; comments</strong>
+          <span class="small text-muted"><%= comments.length %> entries</span>
+        </div>
+
+        <div class="card-body">
+          <ul class="list-unstyled mb-0" id="commentList">
+            <% if (comments.length === 0) { %>
+              <li class="text-muted small">No activity yet.</li>
+            <% } %>
+
+            <% comments.forEach(function (entry) { %>
+              <li class="d-flex mb-3">
+                <% if (entry.type === 'activity') { %>
+                  <div class="badge bg-light text-dark border me-2 mt-1" style="min-width: 2.5rem;">
+                    <i class="bi bi-arrow-right-short"></i>
+                  </div>
+                  <div>
+                    <div class="small"><%= entry.body %></div>
+                    <div class="text-muted" style="font-size: 0.75rem;"><%= formatDate(entry.createdAt) %></div>
+                  </div>
+                <% } else { %>
+                  <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
+                       style="width: 2rem; height: 2rem; flex: 0 0 2rem;">
+                    <i class="bi bi-person"></i>
+                  </div>
+                  <div class="bg-light rounded p-2 flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                      <strong class="small"><%= entry.authorName %></strong>
+                      <span class="text-muted" style="font-size: 0.75rem;"><%= formatDate(entry.createdAt) %></span>
+                    </div>
+                    <div class="small mb-0" style="white-space: pre-line;"><%= entry.body %></div>
+                  </div>
+                <% } %>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+
+      <!-- comment form (enhanced by fetch, works without JS too) -->
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+          <form action="/complaints/<%= complaint._id %>/comments" method="POST" id="commentForm"
+                data-ticket="<%= complaint.ticketId %>">
+            <label for="commentBody" class="form-label">Add a comment</label>
+            <textarea class="form-control <%= fieldError('body') ? 'is-invalid' : '' %>"
+                      id="commentBody" name="body" rows="2" maxlength="1000" required
+                      placeholder="Ask for an update or add details..."></textarea>
+            <% if (fieldError('body')) { %><div class="invalid-feedback"><%= fieldError('body') %></div><% } %>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <span class="small text-muted">Everyone watching this ticket will see it.</span>
+              <button class="btn btn-primary btn-sm px-3" type="submit" id="commentButton">
+                <i class="bi bi-send me-1"></i>Post
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== right column ==================== -->
+    <div class="col-lg-4">
+      <!-- details -->
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-header bg-white"><strong>Details</strong></div>
+        <ul class="list-group list-group-flush small">
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Reported by</span>
+            <span><%= complaint.reportedBy ? complaint.reportedBy.name : '-' %></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Assigned to</span>
+            <span>
+              <%= complaint.assignedTo ? (complaint.assignedTo.name + (complaint.assignedTo.jobTitle ? ' (' + complaint.assignedTo.jobTitle + ')' : '')) : 'Unassigned' %>
+            </span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Created</span>
+            <span><%= formatDate(complaint.createdAt) %></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Last updated</span>
+            <span><%= formatDate(complaint.updatedAt) %></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Resolved at</span>
+            <span><%= complaint.resolvedAt ? formatDate(complaint.resolvedAt) : '-' %></span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- staff: change status -->
+      <% if (allowedStatuses.length > 0) { %>
+        <div class="card border-0 shadow-sm mb-3">
+          <div class="card-header bg-white"><strong><i class="bi bi-arrow-left-right me-1"></i>Change status</strong></div>
+          <div class="card-body">
+            <form action="/complaints/<%= complaint._id %>/status" method="POST">
+              <input type="hidden" name="_method" value="PATCH">
+              <div class="input-group">
+                <select name="status" class="form-select" aria-label="New status">
+                  <%
+                    // Show the current status first (pre-selected; submitting
+                    // it is a no-op the controller acknowledges) followed by
+                    // every legal next state. Admin already gets all five
+                    // including the current one, so nothing is prepended there.
+                    const statusOptions = allowedStatuses.includes(complaint.status)
+                      ? allowedStatuses
+                      : [complaint.status].concat(allowedStatuses);
+                  %>
+                  <% statusOptions.forEach(function (status) { %>
+                    <option value="<%= status %>" <%= complaint.status === status ? 'selected' : '' %>><%= status %></option>
+                  <% }) %>
+                </select>
+                <button class="btn btn-primary" type="submit">Update</button>
+              </div>
+              <div class="form-text">
+                Currently <strong><%= complaint.status %></strong> &middot;
+                Workflow: Submitted &rarr; Assigned &rarr; In Progress &rarr; Resolved &rarr; Closed
+              </div>
+            </form>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- admin: assign + priority -->
+      <% if (currentUser.role === 'admin') { %>
+        <div class="card border-0 shadow-sm mb-3">
+          <div class="card-header bg-white"><strong><i class="bi bi-person-check me-1"></i>Assign to staff</strong></div>
+          <div class="card-body">
+            <form action="/complaints/<%= complaint._id %>/assign" method="POST">
+              <input type="hidden" name="_method" value="PATCH">
+              <input type="hidden" name="redirect" value="/complaints/<%= complaint.ticketId %>">
+              <div class="input-group">
+                <select name="assignedTo" class="form-select" required>
+                  <option value="">Choose a staff member...</option>
+                  <% staffMembers.forEach(function (staffMember) { %>
+                    <option value="<%= staffMember._id %>"
+                      <%= complaint.assignedTo && String(complaint.assignedTo._id) === String(staffMember._id) ? 'selected' : '' %>>
+                      <%= staffMember.name %> - <%= staffMember.jobTitle || staffMember.department %>
+                    </option>
+                  <% }) %>
+                </select>
+                <button class="btn btn-primary" type="submit">Assign</button>
+              </div>
+            </form>
+
+            <hr class="my-3">
+
+            <form action="/complaints/<%= complaint._id %>/priority" method="POST">
+              <input type="hidden" name="_method" value="PATCH">
+              <input type="hidden" name="redirect" value="/complaints/<%= complaint.ticketId %>">
+              <label class="form-label small mb-1" for="prioritySelect">Priority</label>
+              <div class="input-group">
+                <select name="priority" id="prioritySelect" class="form-select">
+                  <% priorities.forEach(function (priorityOption) { %>
+                    <option value="<%= priorityOption %>" <%= complaint.priority === priorityOption ? 'selected' : '' %>>
+                      <%= priorityOption %>
+                    </option>
+                  <% }) %>
+                </select>
+                <button class="btn btn-outline-primary" type="submit">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- student: feedback -->
+      <% if (isReporter && ['Resolved', 'Closed'].includes(complaint.status)) { %>
+        <div class="card border-0 shadow-sm mb-3">
+          <div class="card-header bg-white"><strong><i class="bi bi-star me-1"></i>Rate the resolution</strong></div>
+          <div class="card-body">
+            <% if (feedback) { %>
+              <div class="text-warning fs-5 mb-1">
+                <% for (let star = 1; star <= 5; star += 1) { %>
+                  <i class="bi bi-star<%= star <= feedback.rating ? '-fill' : '' %>"></i>
+                <% } %>
+                <span class="text-dark fs-6 ms-2"><%= feedback.rating %>/5</span>
+              </div>
+              <% if (feedback.comment) { %><p class="small mb-0">"<%= feedback.comment %>"</p><% } %>
+            <% } else { %>
+              <form action="/complaints/<%= complaint._id %>/feedback" method="POST">
+                <div class="star-rating mb-2" role="radiogroup" aria-label="Rating from 1 to 5">
+                  <% [5, 4, 3, 2, 1].forEach(function (starValue) { %>
+                    <input type="radio" id="star<%= starValue %>" name="rating" value="<%= starValue %>" required>
+                    <label for="star<%= starValue %>" title="<%= starValue %> star(s)"><i class="bi bi-star-fill"></i></label>
+                  <% }) %>
+                </div>
+                <div class="form-text mt-1">Click the stars to rate (1 = poor, 5 = excellent).</div>
+
+                <textarea class="form-control my-2" name="comment" rows="2" maxlength="500"
+                          placeholder="Optional comment"></textarea>
+                <button class="btn btn-warning btn-sm w-100" type="submit">
+                  <i class="bi bi-send me-1"></i>Submit feedback
+                </button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+
+      <div class="card border-0 shadow-sm">
+        <div class="card-body small text-muted">
+          <strong class="d-block text-dark mb-1">Status workflow</strong>
+          Submitted &rarr; Assigned &rarr; In Progress &rarr; Resolved &rarr; Closed
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>
+<script src="/js/complaintPage.js"></script>

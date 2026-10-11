@@ -1,0 +1,194 @@
+<%- include('../partials/head') %>
+
+<div class="container py-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="/student">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="/student/complaints">My Complaints</a></li>
+      <li class="breadcrumb-item active">Report an issue</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <!-- ------------------------- the form ------------------------- -->
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white">
+          <h1 class="h4 fw-bold mb-1">Report an issue</h1>
+          <p class="text-muted small mb-0">
+            Fill in the details so the maintenance team can find and fix it quickly.
+          </p>
+        </div>
+
+        <div class="card-body">
+          <!-- the duplicate-warning button must live inside the form to submit it -->
+          <form action="/complaints" method="POST" enctype="multipart/form-data"
+                id="complaintForm" novalidate>
+
+          <% if (typeof notice !== 'undefined' && notice) { %>
+            <div class="alert alert-warning d-flex align-items-start" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+              <div>
+                <strong><%= notice %></strong>
+                <ul class="mb-2 mt-1">
+                  <% similarComplaints.forEach(function (similar) { %>
+                    <li>
+                      <a href="/complaints/<%= similar.ticketId %>" target="_blank">
+                        <%= similar.ticketId %> - <%= similar.title %>
+                      </a>
+                      <span class="badge bg-secondary"><%= similar.status %></span>
+                    </li>
+                  <% }) %>
+                </ul>
+                <!-- "Create anyway" submits the SAME form with confirmDuplicate=yes -->
+                <button type="submit" name="confirmDuplicate" value="yes" class="btn btn-sm btn-warning">
+                  <i class="bi bi-exclamation-circle me-1"></i>Create New Complaint anyway
+                </button>
+              </div>
+            </div>
+          <% } %>
+
+          <%
+            const titleError = fieldError('title');
+            const descriptionError = fieldError('description');
+            const categoryError = fieldError('category');
+            const locationError = fieldError('location');
+            const priorityError = fieldError('priority');
+          %>
+
+            <div class="mb-3">
+              <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+              <input type="text" class="form-control <%= titleError ? 'is-invalid' : '' %>"
+                     id="title" name="title" maxlength="120" required
+                     placeholder="e.g. Projector not turning on"
+                     value="<%= (old && old.title) ? old.title : '' %>">
+              <% if (titleError) { %><div class="invalid-feedback"><%= titleError %></div><% } %>
+            </div>
+
+            <div class="mb-3">
+              <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+              <textarea class="form-control <%= descriptionError ? 'is-invalid' : '' %>"
+                        id="description" name="description" rows="4" maxlength="2000" required
+                        placeholder="What exactly is broken? When did it start?"><%= (old && old.description) ? old.description : '' %></textarea>
+              <% if (descriptionError) { %><div class="invalid-feedback"><%= descriptionError %></div><% } %>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+                <select class="form-select <%= categoryError ? 'is-invalid' : '' %>"
+                        id="category" name="category" required>
+                  <option value="">Choose a category...</option>
+                  <% categories.forEach(function (category) { %>
+                    <option value="<%= category %>" <%= (old && old.category === category) ? 'selected' : '' %>>
+                      <%= category %>
+                    </option>
+                  <% }) %>
+                </select>
+                <% if (categoryError) { %><div class="invalid-feedback"><%= categoryError %></div><% } %>
+              </div>
+
+              <div class="col-md-6">
+                <label for="location" class="form-label">Location <span class="text-danger">*</span></label>
+                <input type="text" class="form-control <%= locationError ? 'is-invalid' : '' %>"
+                       id="location" name="location" maxlength="120" required
+                       placeholder="e.g. Block C, Lab 2"
+                       value="<%= (old && old.location) ? old.location : '' %>">
+                <% if (locationError) { %><div class="invalid-feedback"><%= locationError %></div><% } %>
+              </div>
+            </div>
+
+            <!-- live duplicate check (fetch) - also checked on the server -->
+            <div id="similarResults" class="mb-3"></div>
+
+            <div class="mb-3">
+              <label class="form-label d-block">Priority <span class="text-danger">*</span></label>
+              <div class="row g-2">
+                <%
+                  const priorityHelp = {
+                    'Low': 'Minor issue, work can wait',
+                    'Medium': 'Affects one area, work can continue',
+                    'High': 'Seriously affects normal activities',
+                    'Urgent': 'Affects many people or critical infrastructure'
+                  };
+                  priorities.forEach(function (priorityOption) {
+                %>
+                  <div class="col-sm-6">
+                    <div class="form-check border rounded p-2 h-100">
+                      <input class="form-check-input" type="radio" name="priority" id="priority<%= priorityOption %>"
+                             value="<%= priorityOption %>"
+                             <%= ((old && old.priority === priorityOption) || (!old || (!old.priority && priorityOption === 'Medium'))) ? 'checked' : '' %>
+                             required>
+                      <label class="form-check-label fw-semibold" for="priority<%= priorityOption %>">
+                        <%= priorityOption %>
+                      </label>
+                      <div class="small text-muted"><%= priorityHelp[priorityOption] %></div>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+              <% if (priorityError) { %><div class="text-danger small mt-1"><%= priorityError %></div><% } %>
+            </div>
+
+            <div class="mb-4">
+              <label for="image" class="form-label">Photo (optional)</label>
+              <input class="form-control <%= fieldError('image') ? 'is-invalid' : '' %>"
+                     type="file" id="image" name="image" accept="image/*">
+              <div class="form-text">JPG, PNG, GIF or WEBP - max 2 MB. A photo helps the team fix it faster.</div>
+              <% if (fieldError('image')) { %><div class="invalid-feedback"><%= fieldError('image') %></div><% } %>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-send me-1"></i>Submit complaint
+              </button>
+              <a href="/student" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------------------- side help ------------------------- -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+          <h2 class="h6 text-uppercase text-muted"><i class="bi bi-signpost me-1"></i>What happens next?</h2>
+          <ol class="small ps-3 mb-0">
+            <li>You get a ticket number like <strong>CF-1042</strong>.</li>
+            <li>An admin assigns it to the right staff member.</li>
+            <li>The staff member accepts it and starts working.</li>
+            <li>You get asked to confirm the fix.</li>
+            <li>You rate the resolution 1-5 stars.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+          <h2 class="h6 text-uppercase text-muted"><i class="bi bi-lightning me-1"></i>Escalation</h2>
+          <p class="small text-muted mb-0">
+            High and urgent complaints that are not resolved within
+            <strong>48 hours</strong> are automatically escalated and shown on the
+            admin dashboard.
+          </p>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h2 class="h6 text-uppercase text-muted"><i class="bi bi-people me-1"></i>Before you report</h2>
+          <p class="small text-muted mb-0">
+            We first check for an <strong>open complaint with the same category and
+            location</strong>. If one exists you can simply follow that ticket instead
+            of creating a duplicate.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>
+<script src="/js/duplicateCheck.js"></script>

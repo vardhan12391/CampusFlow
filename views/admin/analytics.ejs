@@ -1,0 +1,132 @@
+<%- include('../partials/head') %>
+
+<div class="container py-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+      <li class="breadcrumb-item active">Analytics</li>
+    </ol>
+  </nav>
+
+  <div class="mb-3">
+    <h1 class="h4 fw-bold mb-1"><i class="bi bi-bar-chart-line me-1"></i>Analytics</h1>
+    <p class="text-muted small mb-0">Numbers are computed by MongoDB aggregation pipelines - see controllers/adminController.js.</p>
+  </div>
+
+  <!-- Headline statistics -->
+  <div class="row g-3 mb-4">
+    <%- include('../partials/statCard', {
+      icon: 'bi-speedometer2',
+      label: 'Average resolution time',
+      value: averageResolutionDays + ' days',
+      colour: 'bg-success'
+    }) %>
+    <%- include('../partials/statCard', {
+      icon: 'bi-star-fill', label: 'Average rating', value: averageRating + ' / 5',
+      colour: 'bg-warning'
+    }) %>
+    <%- include('../partials/statCard', {
+      icon: 'bi-check2-all', label: 'Resolved complaints', value: resolvedCount,
+      colour: 'bg-primary'
+    }) %>
+    <%- include('../partials/statCard', {
+      icon: 'bi-hourglass-split', label: 'Open complaints', value: openCount,
+      colour: 'bg-secondary'
+    }) %>
+    <%- include('../partials/statCard', {
+      icon: 'bi-exclamation-octagon', label: 'Escalated', value: escalatedCount,
+      colour: 'bg-danger'
+    }) %>
+  </div>
+
+  <!-- Charts -->
+  <div class="row g-3 mb-3">
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white"><strong>Complaints by category</strong></div>
+        <div class="card-body">
+          <canvas id="categoryChart"
+                  data-labels='<%= JSON.stringify(byCategory.map(function (row) { return row.category; })) %>'
+                  data-values='<%= JSON.stringify(byCategory.map(function (row) { return row.count; })) %>'
+                  height="240"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white"><strong>Complaints by status</strong></div>
+        <div class="card-body">
+          <canvas id="statusChart"
+                  data-labels='<%= JSON.stringify(byStatus.map(function (row) { return row.status; })) %>'
+                  data-values='<%= JSON.stringify(byStatus.map(function (row) { return row.count; })) %>'
+                  height="240"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>Monthly complaints (last 6 months)</strong></div>
+        <div class="card-body">
+          <canvas id="monthlyChart"
+                  data-labels='<%= JSON.stringify(monthLabels) %>'
+                  data-values='<%= JSON.stringify(monthCounts) %>'
+                  height="120"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Performance table -->
+  <div class="row g-3">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>Category performance - average resolution time</strong></div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Category</th>
+                <th class="text-end">Resolved</th>
+                <th class="text-end">Avg resolution</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (resolutionByCategory.length === 0) { %>
+                <tr><td colspan="3" class="text-center text-muted py-4">No resolved complaints yet.</td></tr>
+              <% } %>
+              <% resolutionByCategory.forEach(function (row) { %>
+                <tr>
+                  <td><%= row.category %></td>
+                  <td class="text-end"><%= row.resolvedCount %></td>
+                  <td class="text-end fw-semibold"><%= (row.avgHours / 24).toFixed(1) %> days</td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>How to read this page</strong></div>
+        <div class="card-body small text-muted">
+          <p><strong class="text-dark">Pie chart</strong> - <code>$group by category</code>, one slice per category.</p>
+          <p><strong class="text-dark">Bar chart</strong> - <code>$group by status</code>, one bar per status.</p>
+          <p><strong class="text-dark">Line chart</strong> - <code>$match createdAt &gt;= 6 months ago</code>, then <code>$group by %Y-%m</code>.</p>
+          <p><strong class="text-dark">Resolution time</strong> - <code>$subtract resolvedAt - createdAt</code>, then <code>$avg</code> per category.</p>
+          <p class="mb-0">Aggregations run in the database, so the browser only receives the final summary.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>
+<script src="/vendor/chart.umd.min.js"></script>
+<script src="/js/analytics.js"></script>

@@ -1,0 +1,50 @@
+<%#
+ * partials/sidebar.ejs
+ * Dashboard sidebar. `sidebarSection` is set by each page so the active
+ * link is highlighted with Bootstrap's .active class.
+ */
+%>
+<%
+const section = typeof sidebarSection !== 'undefined' ? sidebarSection : '';
+const role = currentUser ? currentUser.role : '';
+
+const menuByRole = {
+  student: [
+    { key: 'dashboard', label: 'Dashboard', icon: 'bi-speedometer2', href: '/student' },
+    { key: 'complaints', label: 'My Complaints', icon: 'bi-card-list', href: '/student/complaints' },
+    { key: 'new', label: 'Report Issue', icon: 'bi-plus-circle', href: '/complaints/new' },
+  ],
+  staff: [
+    { key: 'dashboard', label: 'Dashboard', icon: 'bi-speedometer2', href: '/staff' },
+    { key: 'complaints', label: 'My Complaints', icon: 'bi-card-list', href: '/staff/complaints' },
+    // "Unassigned pool" / "All complaints" live in the tabs ON the list page
+    // (and as the pool button on the dashboard) - no third copy here.
+  ],
+  admin: [
+    { key: 'dashboard', label: 'Dashboard', icon: 'bi-speedometer2', href: '/admin' },
+    { key: 'complaints', label: 'All Complaints', icon: 'bi-card-list', href: '/admin/complaints' },
+    { key: 'escalated', label: 'Escalated', icon: 'bi-exclamation-octagon', href: '/admin/complaints?escalated=true' },
+    { key: 'analytics', label: 'Analytics', icon: 'bi-bar-chart-line', href: '/admin/analytics' },
+    { key: 'feedback', label: 'Feedback', icon: 'bi-star', href: '/admin/feedback' },
+    { key: 'users', label: 'User Management', icon: 'bi-people', href: '/admin/users' },
+  ],
+};
+const menu = menuByRole[role] || [];
+%>
+<div class="card border-0 shadow-sm mb-3">
+  <div class="list-group list-group-flush">
+    <% menu.forEach(function (item) { %>
+      <a href="<%= item.href %>"
+         class="list-group-item list-group-item-action d-flex align-items-center <%= section === item.key ? 'active' : '' %>">
+        <i class="bi <%= item.icon %> me-2"></i><%= item.label %>
+      </a>
+    <% }) %>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm d-none d-md-block">
+  <div class="card-body small text-muted">
+    <strong class="d-block mb-1">CampusFlow</strong>
+    Report. Assign. Track. Resolve.
+  </div>
+</div>

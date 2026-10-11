@@ -1,0 +1,28 @@
+<%#
+ * partials/footer.ejs
+ */
+%>
+<footer class="bg-dark text-white-50 mt-auto py-4">
+  <div class="container-fluid px-3">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <span class="text-white fw-semibold"><i class="bi bi-diagram-3-fill me-1"></i>CampusFlow</span>
+        <p class="small mb-0 mt-1">College Operations &amp; Complaint Management System</p>
+      </div>
+      <div class="col-md-4 small">
+        <span class="text-white fw-semibold d-block mb-1">Quick links</span>
+        <%# Only links the navbar does NOT already show: repeating Login /
+            Register here put two identical links on every page, and a signed-
+            in user has no use for them at all. Colour + underline come from
+            `footer a` in style.css so the link never looks like plain text. %>
+        <a href="/">Home</a>
+      </div>
+      <div class="col-md-4 small">
+        <span class="text-white fw-semibold d-block mb-1">Tech stack</span>
+        Node.js &middot; Express &middot; MongoDB &middot; EJS &middot; Bootstrap 5
+      </div>
+    </div>
+    <hr class="border-secondary">
+    <p class="small mb-0">&copy; <%= new Date().getFullYear() %> CampusFlow. Built as an academic project.</p>
+  </div>
+</footer>

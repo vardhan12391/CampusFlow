@@ -1,0 +1,73 @@
+<%- include('../partials/head') %>
+
+<div class="container py-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+      <li class="breadcrumb-item active">Feedback</li>
+    </ol>
+  </nav>
+
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <h1 class="h4 fw-bold mb-0"><i class="bi bi-star-fill text-warning me-1"></i>Student Feedback</h1>
+    <span class="text-muted small"><%= totalFeedback %> feedback entry(s)</span>
+  </div>
+
+  <!-- rating distribution -->
+  <div class="row g-3 mb-4">
+    <% for (let rating = 5; rating >= 1; rating -= 1) { %>
+      <div class="col">
+        <div class="card border-0 shadow-sm text-center">
+          <div class="card-body py-3">
+            <div class="fs-4 text-warning">
+              <% for (let star = 1; star <= rating; star += 1) { %><i class="bi bi-star-fill"></i><% } %>
+            </div>
+            <div class="fs-5 fw-bold"><%= countsByRating[rating] %></div>
+            <div class="small text-muted">review(s)</div>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <% if (feedbackItems.length === 0) { %>
+      <div class="card-body text-center text-muted py-5">
+        <i class="bi bi-chat-square-quote fs-1"></i>
+        <p class="mb-0 mt-2">No feedback yet - it appears after students confirm a resolution.</p>
+      </div>
+    <% } else { %>
+      <div class="list-group list-group-flush">
+        <% feedbackItems.forEach(function (entry) { %>
+          <div class="list-group-item">
+            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+              <div>
+                <span class="text-warning">
+                  <% for (let star = 1; star <= 5; star += 1) { %>
+                    <i class="bi bi-star<%= star <= entry.rating ? '-fill' : '' %>"></i>
+                  <% } %>
+                </span>
+                <strong class="ms-2"><%= entry.rating %>/5</strong>
+                <% if (entry.complaint) { %>
+                  <a href="/complaints/<%= entry.complaint.ticketId %>" class="ms-2 text-decoration-none">
+                    <%= entry.complaint.ticketId %> - <%= entry.complaint.title %>
+                  </a>
+                <% } %>
+              </div>
+              <div class="small text-muted text-end">
+                by <%= entry.student ? entry.student.name : 'Unknown' %><br>
+                <%= formatDate(entry.createdAt) %>
+              </div>
+            </div>
+            <% if (entry.comment) { %>
+              <p class="mb-0 mt-2 small"><%= entry.comment %></p>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

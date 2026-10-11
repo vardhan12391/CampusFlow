@@ -1,0 +1,136 @@
+/**
+ * public/css/style.css
+ * ---------------------------------------------------------------------------
+ * Small custom layer on top of Bootstrap 5. Keep it short: anything Bootstrap
+ * already does (colours, cards, spacing) should stay in the Bootstrap classes.
+ * This file only adds what Bootstrap cannot express:
+ *   sticky dashboard sidebar, clickable stat cards, star rating, footer.
+ */
+
+:root {
+  --cf-primary: #0d6efd;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------- dashboard sidebar ---------- */
+@media (min-width: 768px) {
+  .card .list-group-item {
+    position: sticky;
+  }
+}
+
+.sidebar-sticky {
+  position: sticky;
+  top: 4.5rem; /* just below the fixed navbar */
+}
+
+/* ---------- stat cards ---------- */
+.stats-card {
+  position: relative; /* needed for .stretched-link */
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12) !important;
+}
+
+/* ---------- star rating (complaint feedback) ----------
+   The inputs are visually hidden, the labels look like stars.
+   DOM order is 5 -> 1, so `~` reaches the LOWER ratings and the
+   row-reverse layout puts star 1 on the left. */
+.star-rating {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 0.15rem;
+}
+
+.star-rating input {
+  display: none;
+}
+
+.star-rating label {
+  color: #d1d5db;
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.star-rating input:checked + label,
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color: #f59e0b;
+}
+
+/* ---------- timeline ---------- */
+#commentList li + li {
+  position: relative;
+}
+
+/* ---------- tables ---------- */
+.table > tbody > tr > td {
+  vertical-align: middle;
+}
+
+/* ---------- footer ---------- */
+/* The footer sits on a dark background, so links get an explicit colour
+   + underline instead of relying on (inherited) defaults that make them
+   look like plain text. */
+footer a {
+  color: #f8f9fa;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+footer a:hover {
+  color: #6ea8fe;
+}
+
+/* ---------- link affordance ---------- */
+/* Breadcrumb links (Home / Dashboard ...) are plain <a> tags inside muted
+   context - style them explicitly so they always read as links, not text. */
+.breadcrumb-item > a {
+  color: var(--cf-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.breadcrumb-item > a:hover {
+  color: #0a58ca;
+}
+
+/* Sidebar items and complaint list rows only changed their BACKGROUND on
+   hover, which is easy to miss - shift the text to the link colour too. */
+.list-group-item-action:not(.active):hover {
+  color: var(--cf-primary);
+}
+
+/* Ticket/title links use Bootstrap's .text-decoration-none utility, which
+   suppresses the underline even on hover - restore it as a hover cue so
+   they still read as clickable. */
+a.text-decoration-none:hover {
+  text-decoration: underline !important;
+}
+
+/* ---------- misc ---------- */
+.breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.list-group-item.active {
+  background-color: var(--cf-primary);
+  border-color: var(--cf-primary);
+}
+
+@media (max-width: 576px) {
+  .display-5 {
+    font-size: 1.9rem;
+  }
+}

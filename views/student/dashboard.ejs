@@ -1,0 +1,93 @@
+<%- include('../partials/head') %>
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-lg-2 col-md-3">
+      <%- include('../partials/sidebar', { sidebarSection: 'dashboard' }) %>
+    </div>
+
+    <div class="col-lg-10 col-md-9">
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb small mb-1">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active">Student Dashboard</li>
+            </ol>
+          </nav>
+          <h1 class="h4 fw-bold mb-0">Hello, <%= currentUser.name %> 👋</h1>
+        </div>
+        <a href="/complaints/new" class="btn btn-primary">
+          <i class="bi bi-plus-circle me-1"></i>Report an issue
+        </a>
+      </div>
+
+      <!-- Statistics -->
+      <div class="row g-3 mb-4">
+        <%- include('../partials/statCard', {
+          icon: 'bi-card-list', label: 'Total complaints', value: total,
+          colour: 'bg-primary', href: '/student/complaints'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-hourglass-split', label: 'Pending', value: pending,
+          colour: 'bg-secondary', href: '/student/complaints?status=Submitted'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-gear', label: 'In Progress', value: countsByStatus['In Progress'],
+          colour: 'bg-info', href: '/student/complaints?status=In Progress'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-check-circle', label: 'Resolved', value: countsByStatus['Resolved'],
+          colour: 'bg-success', href: '/student/complaints?status=Resolved'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-archive', label: 'Closed', value: countsByStatus['Closed'],
+          colour: 'bg-dark', href: '/student/complaints?status=Closed'
+        }) %>
+      </div>
+
+      <% if (openEscalations > 0) { %>
+        <div class="alert alert-warning d-flex align-items-center" role="alert">
+          <i class="bi bi-exclamation-octagon-fill me-2"></i>
+          <div><%= openEscalations %> of your complaints have been escalated for admin attention.</div>
+        </div>
+      <% } %>
+
+      <!-- Recent complaints -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white">
+          <strong><i class="bi bi-clock-history me-1"></i>Recent complaints</strong>
+        </div>
+
+        <% if (recentComplaints.length === 0) { %>
+          <div class="card-body text-center text-muted">
+            <i class="bi bi-emoji-smile fs-1"></i>
+            <p class="mb-3 mt-2">You have not reported any issues yet.</p>
+            <a href="/complaints/new" class="btn btn-primary btn-sm">Report your first issue</a>
+          </div>
+        <% } else { %>
+          <div class="list-group list-group-flush">
+            <% recentComplaints.forEach(function (complaint) { %>
+              <a href="/complaints/<%= complaint.ticketId %>"
+                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                  <span class="fw-semibold text-primary me-2"><%= complaint.ticketId %></span>
+                  <%= complaint.title %>
+                  <div class="small text-muted"><%= complaint.category %> &middot; <%= complaint.location %></div>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                  <%- include('../partials/badges', { badgeType: 'priority', value: complaint.priority }) %>
+                  <%- include('../partials/badges', { badgeType: 'status', value: complaint.status }) %>
+                </div>
+              </a>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

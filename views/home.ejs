@@ -1,0 +1,140 @@
+<%- include('partials/head') %>
+
+<!-- Hero -->
+<section class="bg-primary text-white py-5">
+  <div class="container py-4">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7">
+        <span class="badge bg-white text-primary mb-3 px-3 py-2">College Operations &amp; Complaint Management</span>
+        <h1 class="display-5 fw-bold mb-3">Stop losing complaints in WhatsApp groups.</h1>
+        <p class="lead mb-4">
+          CampusFlow gives students one place to report broken projectors, Wi-Fi failures,
+          damaged furniture and hostel issues - and gives staff and admins a real workflow
+          to assign, track, resolve and measure them.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="/auth/register" class="btn btn-light btn-lg px-4 fw-semibold">
+            <i class="bi bi-rocket-takeoff me-1"></i>Get started free
+          </a>
+          <a href="/auth/login" class="btn btn-outline-light btn-lg px-4">Login to dashboard</a>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card border-0 shadow-lg">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <strong>Ticket CF-1042</strong>
+              <span class="badge bg-warning text-dark">High</span>
+            </div>
+            <h2 class="h6 mb-1">Wi-Fi not working in Lab 2</h2>
+            <p class="small text-muted mb-3">Internet/Wi-Fi &middot; Block C, Lab 2 &middot; reported by Rahul S.</p>
+            <div class="d-flex align-items-center gap-2 small">
+              <span class="badge bg-primary">In Progress</span>
+              <span class="text-muted">assigned to Network Team</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between small text-muted">
+              <span><i class="bi bi-clock me-1"></i>Opened 2 h ago</span>
+              <span><i class="bi bi-check2-circle me-1"></i>SLA 48 h</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="container py-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">How CampusFlow works</h2>
+    <p class="text-muted">One complaint. Five clear states. Zero confusion.</p>
+  </div>
+
+  <div class="row g-3 mb-5">
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body">
+          <span class="badge bg-success-subtle text-success mb-2">For students</span>
+          <h3 class="h5">Report in 30 seconds</h3>
+          <p class="text-muted small mb-0">
+            Pick a category and location, add a photo, get a ticket number (CF-1001) and
+            follow the status until it is fixed. Confirm the fix or reopen the ticket.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body">
+          <span class="badge bg-info text-dark mb-2">For staff</span>
+          <h3 class="h5">A real work queue</h3>
+          <p class="text-muted small mb-0">
+            Accept unassigned tickets, move them to In Progress, leave comments for the
+            student and mark them resolved when the job is done.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body">
+          <span class="badge bg-danger mb-2">For admins</span>
+          <h3 class="h5">Control &amp; analytics</h3>
+          <p class="text-muted small mb-0">
+            Assign work, manage users, watch escalations, and see charts for category,
+            status, monthly volume and average resolution time.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row align-items-center g-4">
+    <div class="col-lg-6">
+      <h2 class="fw-bold">The status workflow</h2>
+      <div class="d-flex flex-wrap gap-2 my-3">
+        <span class="badge bg-secondary p-2">Submitted</span>
+        <i class="bi bi-arrow-right align-self-center"></i>
+        <span class="badge bg-info text-dark p-2">Assigned</span>
+        <i class="bi bi-arrow-right align-self-center"></i>
+        <span class="badge bg-primary p-2">In Progress</span>
+        <i class="bi bi-arrow-right align-self-center"></i>
+        <span class="badge bg-success p-2">Resolved</span>
+        <i class="bi bi-arrow-right align-self-center"></i>
+        <span class="badge bg-dark p-2">Closed</span>
+      </div>
+      <p class="text-muted">
+        High and urgent complaints that are not resolved in time are escalated
+        automatically and surface on the admin dashboard.
+      </p>
+    </div>
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h3 class="h6 text-uppercase text-muted">Built with</h3>
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge bg-dark">Node.js</span>
+            <span class="badge bg-dark">Express</span>
+            <span class="badge bg-dark">MongoDB</span>
+            <span class="badge bg-dark">Mongoose</span>
+            <span class="badge bg-dark">EJS</span>
+            <span class="badge bg-dark">Bootstrap 5</span>
+            <span class="badge bg-dark">Chart.js</span>
+            <span class="badge bg-dark">Express Session</span>
+            <span class="badge bg-dark">Multer</span>
+            <span class="badge bg-dark">bcrypt</span>
+          </div>
+          <hr>
+          <p class="small text-muted mb-0">
+            Server-side rendered MVC app: browser &rarr; route &rarr; middleware &rarr;
+            controller &rarr; Mongoose &rarr; MongoDB &rarr; EJS view.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

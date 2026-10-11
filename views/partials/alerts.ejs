@@ -1,0 +1,24 @@
+<%#
+ * partials/alerts.ejs
+ * Flash messages. The session holds one success and one error message;
+ * middleware/context.js copies them to res.locals and clears them, so each
+ * message is shown exactly once after a redirect.
+ */
+%>
+<% if (success) { %>
+  <div class="container-fluid px-3 pt-3">
+    <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+      <i class="bi bi-check-circle-fill me-1"></i><%= success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  </div>
+<% } %>
+
+<% if (error) { %>
+  <div class="container-fluid px-3 pt-3">
+    <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-1"></i><%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  </div>
+<% } %>

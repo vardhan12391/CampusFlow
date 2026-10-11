@@ -1,0 +1,29 @@
+<%#
+ * partials/badges.ejs
+ * Reusable status / priority badges. Pass badgeType ('status' or 'priority')
+ * and value to render the right coloured badge.
+%>
+<%
+  const badgeKind = typeof badgeType !== 'undefined' ? badgeType : 'status';
+  const badgeValue = typeof value !== 'undefined' ? value : '';
+
+  const statusClasses = {
+    'Submitted': 'bg-secondary',
+    'Assigned': 'bg-info text-dark',
+    'In Progress': 'bg-primary',
+    'Resolved': 'bg-success',
+    'Closed': 'bg-dark',
+  };
+
+  const priorityClasses = {
+    'Low': 'bg-secondary',
+    'Medium': 'bg-info text-dark',
+    'High': 'bg-warning text-dark',
+    'Urgent': 'bg-danger',
+  };
+
+  // NOTE: the variable names are different from the incoming locals on
+  // purpose - re-declaring them with const would be a temporal dead zone error.
+  const badgeClasses = badgeKind === 'status' ? statusClasses[badgeValue] : priorityClasses[badgeValue];
+%>
+<span class="badge <%= badgeClasses %>"><%= badgeValue %></span>

@@ -1,0 +1,86 @@
+<%- include('../partials/head') %>
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-lg-2 col-md-3">
+      <%- include('../partials/sidebar', { sidebarSection: 'dashboard' }) %>
+    </div>
+
+    <div class="col-lg-10 col-md-9">
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb small mb-1">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active">Staff Dashboard</li>
+            </ol>
+          </nav>
+          <h1 class="h4 fw-bold mb-0">Staff Dashboard</h1>
+        </div>
+        <a href="/staff/complaints?scope=unassigned" class="btn btn-outline-primary">
+          <i class="bi bi-inbox me-1"></i>Unassigned pool (<%= unassignedCount %>)
+        </a>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <%- include('../partials/statCard', {
+          icon: 'bi-card-list', label: 'Assigned to me', value: assignedToMe,
+          colour: 'bg-primary', href: '/staff/complaints'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-hourglass-split', label: 'Waiting (Submitted)', value: countsByStatus['Submitted'],
+          colour: 'bg-secondary', href: '/staff/complaints?scope=mine&status=Submitted'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-gear', label: 'In Progress', value: countsByStatus['In Progress'],
+          colour: 'bg-info', href: '/staff/complaints?scope=mine&status=In Progress'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-check-circle', label: 'Resolved', value: countsByStatus['Resolved'],
+          colour: 'bg-success', href: '/staff/complaints?scope=mine&status=Resolved'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-exclamation-octagon', label: 'Urgent / High open', value: urgentOpenCount,
+          colour: 'bg-danger', href: '/staff/complaints?scope=mine&priority=Urgent'
+        }) %>
+      </div>
+
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white">
+          <strong><i class="bi bi-list-check me-1"></i>My open work (most important first)</strong>
+        </div>
+
+        <% if (openComplaints.length === 0) { %>
+          <div class="card-body text-center text-muted">
+            <i class="bi bi-check2-all fs-1"></i>
+            <p class="mb-0 mt-2">Nothing open. Check the unassigned pool for new tickets.</p>
+          </div>
+        <% } else { %>
+          <div class="list-group list-group-flush">
+            <% openComplaints.forEach(function (complaint) { %>
+              <div class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                  <a href="/complaints/<%= complaint.ticketId %>" class="fw-semibold text-decoration-none">
+                    <span class="text-primary me-2"><%= complaint.ticketId %></span><%= complaint.title %>
+                  </a>
+                  <div class="small text-muted"><%= complaint.category %> &middot; <%= complaint.location %></div>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                  <% if (complaint.isEscalated) { %>
+                    <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i>Escalated</span>
+                  <% } %>
+                  <%- include('../partials/badges', { badgeType: 'priority', value: complaint.priority }) %>
+                  <%- include('../partials/badges', { badgeType: 'status', value: complaint.status }) %>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

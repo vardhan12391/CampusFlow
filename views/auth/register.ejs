@@ -1,0 +1,110 @@
+<%- include('../partials/head') %>
+
+<main class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+
+      <div class="text-center mb-4">
+        <h1 class="h3 fw-bold mb-1">Create your account</h1>
+        <p class="text-muted mb-0">Students can self-register. Staff &amp; admin accounts are created by the admin.</p>
+      </div>
+
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5">
+          <%
+            const nameError = fieldError('name');
+            const emailError = fieldError('email');
+            const passwordError = fieldError('password');
+            const confirmError = fieldError('confirmPassword');
+            const studentIdError = fieldError('studentId');
+            const departmentError = fieldError('department');
+            const yearError = fieldError('year');
+          %>
+
+          <form action="/auth/register" method="POST">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="name" class="form-label">Full name</label>
+                <input type="text" class="form-control <%= nameError ? 'is-invalid' : '' %>"
+                       id="name" name="name" value="<%= (old && old.name) ? old.name : '' %>"
+                       minlength="2" maxlength="60" required>
+                <% if (nameError) { %><div class="invalid-feedback"><%= nameError %></div><% } %>
+              </div>
+
+              <div class="col-md-6">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control <%= emailError ? 'is-invalid' : '' %>"
+                       id="email" name="email" value="<%= (old && old.email) ? old.email : '' %>" required>
+                <% if (emailError) { %><div class="invalid-feedback"><%= emailError %></div><% } %>
+              </div>
+
+              <div class="col-md-6">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control <%= passwordError ? 'is-invalid' : '' %>"
+                       id="password" name="password" minlength="6" maxlength="72" required>
+                <div class="form-text">At least 6 characters.</div>
+                <% if (passwordError) { %><div class="invalid-feedback"><%= passwordError %></div><% } %>
+              </div>
+
+              <div class="col-md-6">
+                <label for="confirmPassword" class="form-label">Confirm password</label>
+                <input type="password" class="form-control <%= confirmError ? 'is-invalid' : '' %>"
+                       id="confirmPassword" name="confirmPassword" minlength="6" required>
+                <% if (confirmError) { %><div class="invalid-feedback"><%= confirmError %></div><% } %>
+              </div>
+
+              <div class="col-md-4">
+                <label for="studentId" class="form-label">Student ID</label>
+                <input type="text" class="form-control <%= studentIdError ? 'is-invalid' : '' %>"
+                       id="studentId" name="studentId"
+                       value="<%= (old && old.studentId) ? old.studentId : '' %>"
+                       placeholder="e.g. 21CS1042" required>
+                <% if (studentIdError) { %><div class="invalid-feedback"><%= studentIdError %></div><% } %>
+              </div>
+
+              <div class="col-md-4">
+                <label for="department" class="form-label">Department</label>
+                <select class="form-select <%= departmentError ? 'is-invalid' : '' %>" id="department" name="department" required>
+                  <option value="">Choose...</option>
+                  <%
+                    const departments = ['Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Information Tech'];
+                    departments.forEach(function (dept) {
+                  %>
+                    <option value="<%= dept %>" <%= (old && old.department === dept) ? 'selected' : '' %>><%= dept %></option>
+                  <% }) %>
+                </select>
+                <% if (departmentError) { %><div class="invalid-feedback"><%= departmentError %></div><% } %>
+              </div>
+
+              <div class="col-md-4">
+                <label for="year" class="form-label">Year</label>
+                <select class="form-select <%= yearError ? 'is-invalid' : '' %>" id="year" name="year" required>
+                  <option value="">Choose...</option>
+                  <%
+                    const years = ['1st', '2nd', '3rd', '4th'];
+                    years.forEach(function (yearOption) {
+                  %>
+                    <option value="<%= yearOption %>" <%= (old && old.year === yearOption) ? 'selected' : '' %>><%= yearOption %></option>
+                  <% }) %>
+                </select>
+                <% if (yearError) { %><div class="invalid-feedback"><%= yearError %></div><% } %>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 mt-4">
+              <i class="bi bi-person-plus me-1"></i>Create account
+            </button>
+          </form>
+
+          <p class="small text-center mt-3 mb-0">
+            Already registered? <a href="/auth/login">Login</a>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

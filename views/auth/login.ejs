@@ -1,0 +1,67 @@
+<%- include('../partials/head') %>
+
+<main class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-5 col-md-7">
+
+      <div class="text-center mb-4">
+        <span class="badge bg-primary mb-2"><i class="bi bi-diagram-3-fill me-1"></i>CampusFlow</span>
+        <h1 class="h3 fw-bold mb-1">Welcome back</h1>
+        <p class="text-muted mb-0">Sign in to report and track college issues</p>
+      </div>
+
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5">
+          <%
+            const emailError = fieldError('email');
+            const passwordError = fieldError('password');
+          %>
+
+          <form action="/auth/login" method="POST">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email"
+                     class="form-control <%= emailError ? 'is-invalid' : '' %>"
+                     id="email" name="email"
+                     value="<%= (old && old.email) ? old.email : '' %>"
+                     required autofocus autocomplete="email">
+              <% if (emailError) { %><div class="invalid-feedback"><%= emailError %></div><% } %>
+            </div>
+
+            <div class="mb-4">
+              <label for="password" class="form-label">Password</label>
+              <input type="password"
+                     class="form-control <%= passwordError ? 'is-invalid' : '' %>"
+                     id="password" name="password"
+                     required autocomplete="current-password">
+              <% if (passwordError) { %><div class="invalid-feedback"><%= passwordError %></div><% } %>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2">
+              <i class="bi bi-box-arrow-in-right me-1"></i>Login
+            </button>
+          </form>
+
+          <p class="small text-center mt-3 mb-0">
+            New student? <a href="/auth/register">Create an account</a>
+          </p>
+        </div>
+      </div>
+
+      <div class="card border-0 bg-light mt-3">
+        <div class="card-body small">
+          <strong class="d-block mb-1"><i class="bi bi-key me-1"></i>Demo accounts</strong>
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge bg-success">admin@campusflow.edu / password123</span>
+            <span class="badge bg-info text-dark">staff@campusflow.edu / password123</span>
+            <span class="badge bg-primary">rahul@campusflow.edu / password123</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

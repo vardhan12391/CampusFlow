@@ -1,0 +1,18 @@
+<%- include('../partials/head') %>
+
+<main class="container py-5 text-center">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="display-1 text-danger"><%= (typeof statusCode !== 'undefined' && statusCode) ? statusCode : 500 %></div>
+      <h1 class="h3 fw-bold"><%= (typeof title !== 'undefined' && title) ? title : 'Something went wrong' %></h1>
+      <p class="text-muted">
+        <%= (typeof message !== 'undefined' && message) ? message : 'Please try again in a moment.' %>
+      </p>
+      <a href="/" class="btn btn-primary"><i class="bi bi-house me-1"></i>Back to home</a>
+      <a href="javascript:history.back()" class="btn btn-outline-secondary">Go back</a>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

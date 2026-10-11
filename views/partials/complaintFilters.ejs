@@ -1,0 +1,108 @@
+<%#
+ * partials/complaintFilters.ejs
+ * The search / filter / sort bar shared by the three complaint lists.
+ * It is a normal GET form: the browser submits ?search=..&status=..
+ * and the controller turns that query string into a MongoDB query.
+ *
+ * Expected locals: filterAction (e.g. "/admin/complaints"), showLocation,
+ * showAssigneeFilter, staffMembers (optional), listScope (optional)
+%>
+<%
+  const action = typeof filterAction !== 'undefined' ? filterAction : '/student/complaints';
+  const selectedStatus = typeof query.status !== 'undefined' ? query.status : '';
+  const selectedCategory = typeof query.category !== 'undefined' ? query.category : '';
+  const selectedPriority = typeof query.priority !== 'undefined' ? query.priority : '';
+  const selectedSort = query.sort || 'newest';
+%>
+<form action="<%= action %>" method="GET" class="card border-0 shadow-sm mb-3">
+  <div class="card-body">
+    <div class="row g-2 align-items-end">
+      <!-- Search: ticket id, title, location or description -->
+      <div class="col-12 col-md-5">
+        <label class="form-label small mb-1" for="filterSearch">Search</label>
+        <input type="search" class="form-control" id="filterSearch" name="search"
+               value="<%= query.search || '' %>" placeholder="CF-1042, Wi-Fi, Lab 2 ...">
+      </div>
+
+      <% if (typeof showLocation !== 'undefined' && showLocation) { %>
+        <div class="col-6 col-md-3">
+          <label class="form-label small mb-1" for="filterLocation">Location</label>
+          <input type="text" class="form-control" id="filterLocation" name="location"
+                 value="<%= query.location || '' %>" placeholder="Hostel A">
+        </div>
+      <% } %>
+
+      <% if (typeof showAssigneeFilter !== 'undefined' && showAssigneeFilter) { %>
+        <div class="col-6 col-md-2">
+          <label class="form-label small mb-1" for="filterAssignee">Assigned to</label>
+          <select class="form-select form-select-sm" id="filterAssignee" name="assignedTo">
+            <option value="">Anyone</option>
+            <option value="unassigned" <%= query.assignedTo === 'unassigned' ? 'selected' : '' %>>Unassigned</option>
+            <% (typeof staffMembers !== 'undefined' ? staffMembers : []).forEach(function (staff) { %>
+              <option value="<%= staff._id %>" <%= query.assignedTo === String(staff._id) ? 'selected' : '' %>>
+                <%= staff.name %>
+              </option>
+            <% }) %>
+          </select>
+        </div>
+      <% } %>
+
+      <div class="col-6 col-md-2">
+        <label class="form-label small mb-1" for="filterStatus">Status</label>
+        <select class="form-select form-select-sm" id="filterStatus" name="status">
+          <option value="">All statuses</option>
+          <% statuses.forEach(function (status) { %>
+            <option value="<%= status %>" <%= selectedStatus === status ? 'selected' : '' %>><%= status %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="col-6 col-md-2">
+        <label class="form-label small mb-1" for="filterSort">Sort by</label>
+        <select class="form-select form-select-sm" id="filterSort" name="sort">
+          <option value="newest" <%= selectedSort === 'newest' ? 'selected' : '' %>>Newest first</option>
+          <option value="oldest" <%= selectedSort === 'oldest' ? 'selected' : '' %>>Oldest first</option>
+          <option value="priority" <%= selectedSort === 'priority' ? 'selected' : '' %>>Priority (urgent first)</option>
+          <option value="updated" <%= selectedSort === 'updated' ? 'selected' : '' %>>Recently updated</option>
+        </select>
+      </div>
+
+      <div class="col-6 col-md-2">
+        <label class="form-label small mb-1" for="filterCategory">Category</label>
+        <select class="form-select form-select-sm" id="filterCategory" name="category">
+          <option value="">All categories</option>
+          <% categories.forEach(function (category) { %>
+            <option value="<%= category %>" <%= selectedCategory === category ? 'selected' : '' %>><%= category %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="col-6 col-md-2">
+        <label class="form-label small mb-1" for="filterPriority">Priority</label>
+        <select class="form-select form-select-sm" id="filterPriority" name="priority">
+          <option value="">All priorities</option>
+          <% priorities.forEach(function (priority) { %>
+            <option value="<%= priority %>" <%= selectedPriority === priority ? 'selected' : '' %>><%= priority %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <!-- keep the staff "scope" tab (mine / unassigned / all) across a search -->
+      <% if (typeof listScope !== 'undefined' && listScope) { %>
+        <input type="hidden" name="scope" value="<%= listScope %>">
+      <% } %>
+      <% if (typeof query.escalated !== 'undefined' && query.escalated) { %>
+        <input type="hidden" name="escalated" value="true">
+      <% } %>
+
+      <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary btn-sm px-3">
+          <i class="bi bi-search me-1"></i>Apply
+        </button>
+        <a href="<%= action %>" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-x-circle me-1"></i>Clear
+        </a>
+      </div>
+    </div>
+  </div>
+</form>

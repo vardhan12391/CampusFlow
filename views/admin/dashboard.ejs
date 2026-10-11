@@ -1,0 +1,138 @@
+<%- include('../partials/head') %>
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-lg-2 col-md-3">
+      <%- include('../partials/sidebar', { sidebarSection: 'dashboard' }) %>
+    </div>
+
+    <div class="col-lg-10 col-md-9">
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb small mb-1">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active">Admin Dashboard</li>
+            </ol>
+          </nav>
+          <h1 class="h4 fw-bold mb-0">Admin Dashboard</h1>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="/admin/analytics" class="btn btn-outline-primary">
+            <i class="bi bi-bar-chart-line me-1"></i>Analytics
+          </a>
+          <a href="/admin/complaints" class="btn btn-primary">
+            <i class="bi bi-card-list me-1"></i>All complaints
+          </a>
+        </div>
+      </div>
+
+      <!-- Complaint statistics -->
+      <div class="row g-3 mb-3">
+        <%- include('../partials/statCard', {
+          icon: 'bi-card-list', label: 'Total complaints', value: totalComplaints,
+          colour: 'bg-primary', href: '/admin/complaints'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-hourglass-split', label: 'Pending', value: countsByStatus['Submitted'] + countsByStatus['Assigned'],
+          colour: 'bg-secondary', href: '/admin/complaints?status=Submitted'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-gear', label: 'In Progress', value: countsByStatus['In Progress'],
+          colour: 'bg-info', href: '/admin/complaints?status=In Progress'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-check-circle', label: 'Resolved', value: countsByStatus['Resolved'],
+          colour: 'bg-success', href: '/admin/complaints?status=Resolved'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-archive', label: 'Closed', value: countsByStatus['Closed'],
+          colour: 'bg-dark', href: '/admin/complaints?status=Closed'
+        }) %>
+      </div>
+
+      <!-- Users -->
+      <div class="row g-3 mb-4">
+        <%- include('../partials/statCard', {
+          icon: 'bi-people', label: 'Total users', value: totalUsers,
+          colour: 'bg-dark', href: '/admin/users'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-mortarboard', label: 'Students', value: totalStudents,
+          colour: 'bg-success', href: '/admin/users?role=student'
+        }) %>
+        <%- include('../partials/statCard', {
+          icon: 'bi-tools', label: 'Staff members', value: totalStaff,
+          colour: 'bg-warning', href: '/admin/users?role=staff'
+        }) %>
+      </div>
+
+      <div class="row g-3">
+        <!-- Escalations -->
+        <div class="col-lg-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white">
+              <strong class="text-danger"><i class="bi bi-exclamation-octagon-fill me-1"></i>Escalated complaints</strong>
+              <%# No "View all" here - the sidebar's Escalated entry is the
+                  same link (duplicating it was flagged as unnecessary). %>
+            </div>
+            <% if (escalated.length === 0) { %>
+              <div class="card-body text-center text-muted">
+                <i class="bi bi-emoji-smile fs-3"></i>
+                <p class="mb-0 mt-2">Nothing escalated. Everything is inside its time limit.</p>
+              </div>
+            <% } else { %>
+              <div class="list-group list-group-flush">
+                <% escalated.forEach(function (complaint) { %>
+                  <a href="/complaints/<%= complaint.ticketId %>"
+                     class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between">
+                      <span class="text-primary fw-semibold"><%= complaint.ticketId %></span>
+                      <%- include('../partials/badges', { badgeType: 'priority', value: complaint.priority }) %>
+                    </div>
+                    <div class="fw-semibold"><%= complaint.title %></div>
+                    <div class="small text-muted">
+                      <%= complaint.location %> &middot;
+                      assigned to <%= complaint.assignedTo ? complaint.assignedTo.name : 'nobody' %>
+                    </div>
+                  </a>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Recent -->
+        <div class="col-lg-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white">
+              <strong><i class="bi bi-clock-history me-1"></i>Recent complaints</strong>
+              <%# Sidebar "All Complaints" already opens this list (newest is
+                  the default sort), so a second link here would be a repeat. %>
+            </div>
+            <div class="list-group list-group-flush">
+              <% recentComplaints.forEach(function (complaint) { %>
+                <a href="/complaints/<%= complaint.ticketId %>"
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-start gap-2">
+                  <div>
+                    <span class="text-primary fw-semibold"><%= complaint.ticketId %></span>
+                    <%= complaint.title %>
+                    <div class="small text-muted">
+                      by <%= complaint.reportedBy ? complaint.reportedBy.name : '-' %>
+                      &middot; <%= formatDay(complaint.createdAt) %>
+                    </div>
+                  </div>
+                  <%- include('../partials/badges', { badgeType: 'status', value: complaint.status }) %>
+                </a>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

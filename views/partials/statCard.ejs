@@ -1,0 +1,31 @@
+<%#
+ * partials/statCard.ejs
+ * Small dashboard statistic card. Pass icon, label, value, colour and href.
+%>
+<%
+  // Local names differ from the incoming locals on purpose (same-name
+  // declarations would hit JavaScript's temporal dead zone).
+  const statIcon = typeof icon !== 'undefined' ? icon : 'bi-graph-up';
+  const statLabel = typeof label !== 'undefined' ? label : '';
+  const statValue = typeof value !== 'undefined' ? value : 0;
+  const statColour = typeof colour !== 'undefined' ? colour : 'bg-primary';
+  const statHref = typeof href !== 'undefined' ? href : '';
+%>
+<div class="col-6 col-md-4 col-xl stats-col">
+  <div class="card border-0 shadow-sm h-100 stats-card">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start gap-2">
+        <div>
+          <div class="fs-3 fw-bold text-dark"><%= statValue %></div>
+          <div class="text-muted small"><%= statLabel %></div>
+        </div>
+        <span class="<%= statColour %> text-white rounded-3 p-2">
+          <i class="bi <%= statIcon %> fs-5"></i>
+        </span>
+      </div>
+      <% if (statHref) { %>
+        <a href="<%= statHref %>" class="stretched-link small">View all <i class="bi bi-arrow-right"></i></a>
+      <% } %>
+    </div>
+  </div>
+</div>

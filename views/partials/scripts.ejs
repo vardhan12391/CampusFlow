@@ -1,0 +1,13 @@
+<%#
+ * partials/scripts.ejs
+ * Everything that closes an HTML page.
+ * Pass `extraScript` from a page that needs its own JS file, e.g.
+ *   res.render('admin/analytics', { extraScript: '/js/analytics.js', ... })
+ */
+%>
+<script src="/vendor/bootstrap.bundle.min.js"></script>
+<% if (typeof extraScript !== 'undefined' && extraScript) { %>
+  <script src="<%= extraScript %>"></script>
+<% } %>
+</body>
+</html>
