@@ -1,6 +1,5 @@
 /**
  * public/js/complaintPage.js
- * ---------------------------------------------------------------------------
  * Posts a comment with the Fetch API so the page does not reload.
  *
  * The <form> still works without JavaScript (it posts to

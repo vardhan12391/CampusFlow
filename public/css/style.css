@@ -1,6 +1,5 @@
 /**
  * public/css/style.css
- * ---------------------------------------------------------------------------
  * Small custom layer on top of Bootstrap 5. Keep it short: anything Bootstrap
  * already does (colours, cards, spacing) should stay in the Bootstrap classes.
  * This file only adds what Bootstrap cannot express:
@@ -15,7 +14,6 @@ body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* ---------- dashboard sidebar ---------- */
 @media (min-width: 768px) {
   .card .list-group-item {
     position: sticky;
@@ -27,7 +25,6 @@ body {
   top: 4.5rem; /* just below the fixed navbar */
 }
 
-/* ---------- stat cards ---------- */
 .stats-card {
   position: relative; /* needed for .stretched-link */
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -67,17 +64,14 @@ body {
   color: #f59e0b;
 }
 
-/* ---------- timeline ---------- */
 #commentList li + li {
   position: relative;
 }
 
-/* ---------- tables ---------- */
 .table > tbody > tr > td {
   vertical-align: middle;
 }
 
-/* ---------- footer ---------- */
 /* The footer sits on a dark background, so links get an explicit colour
    + underline instead of relying on (inherited) defaults that make them
    look like plain text. */
@@ -91,7 +85,6 @@ footer a:hover {
   color: #6ea8fe;
 }
 
-/* ---------- link affordance ---------- */
 /* Breadcrumb links (Home / Dashboard ...) are plain <a> tags inside muted
    context - style them explicitly so they always read as links, not text. */
 .breadcrumb-item > a {
@@ -117,7 +110,6 @@ a.text-decoration-none:hover {
   text-decoration: underline !important;
 }
 
-/* ---------- misc ---------- */
 .breadcrumb {
   background: transparent;
   padding: 0;

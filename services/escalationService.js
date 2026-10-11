@@ -1,6 +1,5 @@
 /**
  * services/escalationService.js
- * --------------------------------------------------------------------------
  * Escalation in one sentence:
  *   "If a High/Urgent complaint is still not resolved after X hours,
  *    flag it (isEscalated = true) so the admin dashboard can push it."

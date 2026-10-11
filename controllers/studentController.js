@@ -1,6 +1,5 @@
 /**
  * controllers/studentController.js
- * --------------------------------------------------------------------------
  * The student area: dashboard + personal complaint list.
  *
  * Every query in this file starts with `{ reportedBy: req.user._id }`,
@@ -10,7 +9,6 @@ const Complaint = require('../models/Complaint');
 const Comment = require('../models/Comment');
 const { buildComplaintQuery, getPaginationPages } = require('../utils/complaintQuery');
 
-// GET /student
 async function dashboard(req, res, next) {
   try {
     // One aggregation pipeline instead of four separate count queries:
@@ -57,7 +55,6 @@ async function dashboard(req, res, next) {
   }
 }
 
-// GET /student/complaints
 async function listComplaints(req, res, next) {
   try {
     // Same filter/sort/pagination logic as staff and admin, but the base

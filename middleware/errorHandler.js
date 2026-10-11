@@ -1,6 +1,5 @@
 /**
  * middleware/errorHandler.js
- * --------------------------------------------------------------------------
  * Two special middleware that must be registered LAST in app.js:
  *
  *  - notFound    : runs when no route matched        -> 404

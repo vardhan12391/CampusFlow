@@ -22,7 +22,6 @@
         </button>
       </div>
 
-      <!-- role filter tabs -->
       <ul class="nav nav-pills mb-3 flex-wrap gap-1">
         <li class="nav-item">
           <a class="nav-link py-1 px-3 <%= selectedRole === '' ? 'active' : 'border' %>" href="/admin/users">All (<%= counts.all || 0 %>)</a>
@@ -111,7 +110,6 @@
   </div>
 </div>
 
-<!-- Modal: create a new account (staff / admin / extra student) -->
 <div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <form class="modal-content" action="/admin/users" method="POST">

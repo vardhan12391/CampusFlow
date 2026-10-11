@@ -1,6 +1,5 @@
 /**
  * models/Feedback.js
- * --------------------------------------------------------------------------
  * One feedback document = the student's rating after a complaint was resolved.
  *
  * Kept in its own collection (instead of two fields on Complaint) because:

@@ -20,7 +20,6 @@
     </ol>
   </nav>
 
-  <!-- Header -->
   <div class="card border-0 shadow-sm mb-3">
     <div class="card-body">
       <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
@@ -81,9 +80,7 @@
   </div>
 
   <div class="row g-3">
-    <!-- ==================== left column ==================== -->
     <div class="col-lg-8">
-      <!-- description -->
       <div class="card border-0 shadow-sm mb-3">
         <div class="card-header bg-white"><strong>Description</strong></div>
         <div class="card-body">
@@ -100,7 +97,6 @@
         </div>
       </div>
 
-      <!-- timeline -->
       <div class="card border-0 shadow-sm mb-3" id="timeline">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
           <strong><i class="bi bi-clock-history me-1"></i>Activity &amp; comments</strong>
@@ -163,9 +159,7 @@
       </div>
     </div>
 
-    <!-- ==================== right column ==================== -->
     <div class="col-lg-4">
-      <!-- details -->
       <div class="card border-0 shadow-sm mb-3">
         <div class="card-header bg-white"><strong>Details</strong></div>
         <ul class="list-group list-group-flush small">
@@ -194,7 +188,6 @@
         </ul>
       </div>
 
-      <!-- staff: change status -->
       <% if (allowedStatuses.length > 0) { %>
         <div class="card border-0 shadow-sm mb-3">
           <div class="card-header bg-white"><strong><i class="bi bi-arrow-left-right me-1"></i>Change status</strong></div>
@@ -227,7 +220,6 @@
         </div>
       <% } %>
 
-      <!-- admin: assign + priority -->
       <% if (currentUser.role === 'admin') { %>
         <div class="card border-0 shadow-sm mb-3">
           <div class="card-header bg-white"><strong><i class="bi bi-person-check me-1"></i>Assign to staff</strong></div>
@@ -270,7 +262,6 @@
         </div>
       <% } %>
 
-      <!-- student: feedback -->
       <% if (isReporter && ['Resolved', 'Closed'].includes(complaint.status)) { %>
         <div class="card border-0 shadow-sm mb-3">
           <div class="card-header bg-white"><strong><i class="bi bi-star me-1"></i>Rate the resolution</strong></div>

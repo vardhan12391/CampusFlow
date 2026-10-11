@@ -1,6 +1,5 @@
 /**
  * models/Comment.js
- * --------------------------------------------------------------------------
  * Every message AND every automatic status update of a complaint is one
  * document in the `comments` collection. Together they form the timeline
  * shown on the complaint details page:

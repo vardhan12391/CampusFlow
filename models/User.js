@@ -1,6 +1,5 @@
 /**
  * models/User.js
- * --------------------------------------------------------------------------
  * One document in the `users` collection = one account (student, staff, admin).
  *
  * Important fields:
@@ -53,7 +52,7 @@ const userSchema = new mongoose.Schema(
  * Mongoose "pre-save hook": runs automatically before a user document is saved.
  * This is the single place where plain-text passwords become hashes.
  *
- * NOTE: async hooks do NOT receive a `next` callback - you simply return.
+ * NOTE: async hooks do NOT receive a `next` callback.
  */
 userSchema.pre('save', async function () {
   // isModified('password') is false when we update e.g. only the name

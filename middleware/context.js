@@ -1,6 +1,5 @@
 /**
  * middleware/context.js
- * --------------------------------------------------------------------------
  * Runs on EVERY request, before any route, and prepares the values that
  * views need. This is what makes `res.locals.currentUser` available in EJS.
  *
@@ -23,7 +22,6 @@ function flashMessages(req, res, next) {
 }
 
 function viewGlobals(req, res, next) {
-  // The logged-in user (set by middleware/auth.js -> loadUser)
   res.locals.currentUser = req.user || null;
 
   // Option lists used by the forms, defined once in models/Complaint.js

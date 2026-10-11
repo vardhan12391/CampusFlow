@@ -1,6 +1,5 @@
 /**
  * middleware/upload.js
- * --------------------------------------------------------------------------
  * Multer handles `multipart/form-data` - the encoding a browser uses when a
  * <form> contains a file input.
  *

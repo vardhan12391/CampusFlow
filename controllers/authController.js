@@ -1,9 +1,7 @@
 /**
  * controllers/authController.js
- * --------------------------------------------------------------------------
  * Registration, login and logout.
  *
- * LOGIN in plain English:
  *   1. look up the email
  *   2. compare the typed password with the stored bcrypt hash
  *   3. store ONLY the user id in the session
@@ -22,12 +20,10 @@ const DASHBOARD_BY_ROLE = {
   admin: '/admin',
 };
 
-// --- GET /auth/register -----------------------------------------------------
 function showRegister(req, res) {
   res.render('auth/register', { title: 'Create account', old: {} });
 }
 
-// --- POST /auth/register ----------------------------------------------------
 async function register(req, res, next) {
   try {
     const errors = validationResult(req);
@@ -70,12 +66,10 @@ async function register(req, res, next) {
   }
 }
 
-// --- GET /auth/login --------------------------------------------------------
 function showLogin(req, res) {
   res.render('auth/login', { title: 'Login', old: {} });
 }
 
-// --- POST /auth/login -------------------------------------------------------
 async function login(req, res, next) {
   try {
     const errors = validationResult(req);
@@ -112,7 +106,6 @@ async function login(req, res, next) {
   }
 }
 
-// --- POST /auth/logout ------------------------------------------------------
 function logout(req, res) {
   req.session.destroy(() => {
     res.redirect('/auth/login');

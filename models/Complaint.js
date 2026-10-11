@@ -1,6 +1,5 @@
 /**
  * models/Complaint.js
- * --------------------------------------------------------------------------
  * The core document of CampusFlow: one document = one reported issue.
  *
  * Design notes worth quoting in an interview:

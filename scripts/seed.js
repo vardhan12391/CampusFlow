@@ -1,12 +1,8 @@
 /**
  * scripts/seed.js
- * --------------------------------------------------------------------------
  * Fills MongoDB with realistic demo data so the app is useful immediately:
  *
  *   1 admin, 3 staff, 10 students, 42 complaints, comments and feedback.
- *
- * Run it with:   npm run seed
- * (it wipes those collections first - never run it against production data)
  *
  * Every person and detail below is fictional.
  */
@@ -23,7 +19,6 @@ const Counter = require('../models/Counter');
 
 const PRIORITY_RANK = { Urgent: 1, High: 2, Medium: 3, Low: 4 };
 
-// --- small helpers ---------------------------------------------------------
 const pick = (list) => list[Math.floor(Math.random() * list.length)];
 const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -40,7 +35,6 @@ function addDays(date, days) {
   return result;
 }
 
-// --- fictional people ------------------------------------------------------
 const ADMIN = {
   name: 'Ananya Rao',
   email: 'admin@campusflow.edu',
@@ -70,7 +64,6 @@ const STUDENTS = [
   { name: 'Tanvi Desai', studentId: '23IT1047', department: 'Information Tech', year: '1st' },
 ];
 
-// --- complaint templates ---------------------------------------------------
 const COMPLAINT_TEMPLATES = [
   { category: 'Internet/Wi-Fi', title: 'Wi-Fi not working in Lab 2', location: 'Block C, Lab 2' },
   { category: 'Internet/Wi-Fi', title: 'Frequent internet disconnection in hostel', location: 'Hostel A, Room 214' },
@@ -114,7 +107,6 @@ const STAFF_COMMENTS = [
   'Issue reproduced and a temporary fix is applied.',
 ];
 
-// ---------------------------------------------------------------------------
 async function seed() {
   await connectDB();
 
@@ -127,7 +119,6 @@ async function seed() {
     Counter.deleteMany({}),
   ]);
 
-  // --- users ---------------------------------------------------------------
   console.log('Creating users...');
   const admin = await User.create(ADMIN);
 
@@ -153,7 +144,6 @@ async function seed() {
   }
   console.log(`  ${1 + staffUsers.length + studentUsers.length} users created`);
 
-  // --- complaints ----------------------------------------------------------
   console.log('Creating complaints...');
   const complaintDocs = [];
   const commentDocs = [];
@@ -275,7 +265,6 @@ async function seed() {
   await Comment.insertMany(commentDocs);
   console.log(`  ${insertedComplaints.length} complaints, ${commentDocs.length} timeline entries`);
 
-  // --- feedback for finished complaints ------------------------------------
   const feedbackDocs = [];
   const ratings = [5, 4, 4, 3, 5, 2, 4, 5, 3, 4];
   insertedComplaints.forEach((complaint, index) => {
@@ -291,7 +280,6 @@ async function seed() {
   if (feedbackDocs.length > 0) await Feedback.insertMany(feedbackDocs);
   console.log(`  ${feedbackDocs.length} feedback entries`);
 
-  // --- ticket counter ------------------------------------------------------
   // Start AFTER the seeded tickets, otherwise the next complaint created in
   // the app would try to reuse CF-1001.
   await Counter.create({ _id: 'complaintTicket', seq: 1000 + complaintDocs.length });

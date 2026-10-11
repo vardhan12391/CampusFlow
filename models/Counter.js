@@ -1,6 +1,5 @@
 /**
  * models/Counter.js
- * --------------------------------------------------------------------------
  * Generates the unique ticket numbers CF-1001, CF-1002, CF-1003 ...
  *
  * WHY do we need a counter?

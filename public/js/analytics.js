@@ -1,6 +1,5 @@
 /**
  * public/js/analytics.js
- * ---------------------------------------------------------------------------
  * Draws the three charts on the admin analytics page.
  *
  * The data travels like this:

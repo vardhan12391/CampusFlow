@@ -1,6 +1,5 @@
 /**
  * controllers/staffController.js
- * --------------------------------------------------------------------------
  * The staff area. Staff members are the people who actually FIX things.
  *
  * Scopes of the list page:
@@ -11,7 +10,6 @@
 const Complaint = require('../models/Complaint');
 const { buildComplaintQuery, getPaginationPages } = require('../utils/complaintQuery');
 
-// GET /staff
 async function dashboard(req, res, next) {
   try {
     const mineFilter = { assignedTo: req.user._id };
@@ -64,7 +62,6 @@ async function dashboard(req, res, next) {
   }
 }
 
-// GET /staff/complaints
 async function listComplaints(req, res, next) {
   try {
     const scope = ['mine', 'unassigned', 'all'].includes(req.query.scope)

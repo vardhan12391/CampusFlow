@@ -50,8 +50,6 @@
         </ul>
       <% } else { %>
         <ul class="navbar-nav ms-auto">
-          <%# Do not link to the page you are already on (and never mark a
-              link "active" on every page - the old register link did). %>
           <% if (typeof title === 'undefined' || title !== 'Login') { %>
             <li class="nav-item"><a class="nav-link" href="/auth/login">Login</a></li>
           <% } %>

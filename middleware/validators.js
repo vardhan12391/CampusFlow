@@ -1,6 +1,5 @@
 /**
  * middleware/validators.js
- * --------------------------------------------------------------------------
  * Server-side validation with express-validator.
  *
  * WHY validate on the server when the browser already has `required` /

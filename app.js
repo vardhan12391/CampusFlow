@@ -1,14 +1,6 @@
 /**
  * app.js
- * --------------------------------------------------------------------------
- * Entry point of CampusFlow. Reading top-to-bottom shows the full request
- * cycle exactly as it happens:
- *
- *   Browser  ->  middleware  ->  route  ->  controller  ->  Mongoose  ->  MongoDB
- *           <-  EJS view / JSON  <-
- *
- * Keep this file small: it only wires things together. Business logic lives
- * in controllers/, data lives in models/, HTML lives in views/.
+ * Entry point of CampusFlow.
  */
 require('dotenv').config();
 
@@ -35,7 +27,6 @@ const apiRoutes = require('./routes/apiRoutes');
 
 const app = express();
 
-// --- 1. View engine (server-side rendering with EJS) -----------------------
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -47,9 +38,8 @@ if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
 
-// --- 2. Request parsing and static files -----------------------------------
-app.use(express.urlencoded({ extended: true })); // HTML form submissions
-app.use(express.json()); // JSON body for the REST API
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 // Lets an HTML form send PATCH/DELETE by posting a hidden `_method` field.
 // NOTE: a plain string getter only reads the QUERY string, so we pass a small
 // function that checks the parsed body first and falls back to ?_method=.
@@ -61,10 +51,9 @@ app.use(
     return req.query._method;
   })
 );
-app.use(express.static(path.join(__dirname, 'public'))); // /css, /js, /images
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // uploaded photos
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// --- 3. Security headers (helmet sets ~15 HTTP headers for us) -------------
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -83,7 +72,6 @@ app.use(
   })
 );
 
-// --- 4. Sessions (the "remember me" mechanism behind login) ----------------
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'dev_secret_change_me',
@@ -104,7 +92,6 @@ app.use(flashMessages);
 app.use(loadUser);
 app.use(viewGlobals);
 
-// --- 6. Routes --------------------------------------------------------------
 app.get('/', homeController.homePage);
 app.use('/auth', authRoutes);
 app.use('/complaints', complaintRoutes);
@@ -113,11 +100,9 @@ app.use('/staff', staffRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api', apiRoutes);
 
-// --- 7. Error handling (always last) ---------------------------------------
 app.use(notFound);
 app.use(errorHandler);
 
-// --- 8. Server start (also used by the tests) ------------------------------
 async function startServer(port = Number(process.env.PORT) || 3000) {
   await connectDB();
 

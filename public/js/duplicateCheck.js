@@ -1,6 +1,5 @@
 /**
  * public/js/duplicateCheck.js
- * ---------------------------------------------------------------------------
  * Live "similar issue" check while the student is filling in the form.
  *
  * Demonstrates: DOM selection, event listeners, debounce, fetch,

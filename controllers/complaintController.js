@@ -1,6 +1,5 @@
 /**
  * controllers/complaintController.js
- * --------------------------------------------------------------------------
  * Everything that happens to a SINGLE complaint lives here:
  * create -> view -> comment -> assign -> change status -> confirm -> feedback.
  *
@@ -18,9 +17,6 @@ const User = require('../models/User');
 const { HttpError } = require('../middleware/errorHandler');
 const { escapeRegex } = require('../utils/complaintQuery');
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 /** Loads a complaint by ticket id (CF-1042) OR by the MongoDB _id. */
 async function findComplaintById(id) {
@@ -145,11 +141,7 @@ async function saveComplaintRecord({ data, user, imageUrl = null }) {
   return complaint;
 }
 
-// ---------------------------------------------------------------------------
-// Student: create a complaint
-// ---------------------------------------------------------------------------
 
-// GET /complaints/new
 function newComplaintForm(req, res) {
   res.render('student/newComplaint', {
     title: 'Report an issue',
@@ -196,9 +188,6 @@ async function createComplaint(req, res, next) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// View + comments
-// ---------------------------------------------------------------------------
 
 // GET /complaints/:id
 async function showComplaint(req, res, next) {
@@ -269,9 +258,6 @@ async function addComment(req, res, next) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Staff actions
-// ---------------------------------------------------------------------------
 
 // POST /complaints/:id/accept  - staff takes ownership of an unassigned ticket
 async function acceptComplaint(req, res, next) {
@@ -345,9 +331,6 @@ async function changeStatus(req, res, next) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Admin actions
-// ---------------------------------------------------------------------------
 
 // PATCH /complaints/:id/assign
 async function assignComplaint(req, res, next) {
@@ -404,9 +387,6 @@ async function updatePriority(req, res, next) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Student actions: confirm resolution + feedback
-// ---------------------------------------------------------------------------
 
 // POST /complaints/:id/confirm   body: action = close | reopen
 async function confirmResolution(req, res, next) {

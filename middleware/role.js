@@ -1,6 +1,5 @@
 /**
  * middleware/role.js
- * --------------------------------------------------------------------------
  * Role-based authorization: "who is allowed to open this route?".
  *
  * Authentication  = proving identity       (login)
@@ -19,7 +18,6 @@ function requireRole(...allowedRoles) {
     }
 
     if (!allowedRoles.includes(req.user.role)) {
-      // 403 = "I know who you are, but you are not allowed"
       if (req.originalUrl.startsWith('/api')) {
         return res.status(403).json({ success: false, message: 'You do not have permission to do that.' });
       }

@@ -1,8 +1,7 @@
 /**
  * tests/app.test.js
- * --------------------------------------------------------------------------
  * End-to-end checks that run against a SEPARATE database (campusflow_test)
- * and a separate port, so your dev data is never touched.
+ * and a separate port.
  *
  *   npm test
  *
@@ -30,9 +29,6 @@ const Counter = require('../models/Counter');
 const PORT = 3100;
 const BASE = `http://localhost:${PORT}`;
 
-// ---------------------------------------------------------------------------
-// Tiny HTTP client with a cookie jar (session support)
-// ---------------------------------------------------------------------------
 class Session {
   constructor() {
     this.cookies = {};
@@ -115,9 +111,6 @@ const admin = new Session();
 
 let server;
 
-// ---------------------------------------------------------------------------
-// Setup
-// ---------------------------------------------------------------------------
 before(async () => {
   await mongoose.connect(process.env.MONGODB_URI);
   await Promise.all([
@@ -170,9 +163,6 @@ after(async () => {
   await mongoose.disconnect();
 });
 
-// ---------------------------------------------------------------------------
-// 1. Authentication
-// ---------------------------------------------------------------------------
 test('guest is redirected away from protected pages', async () => {
   const response = await guest.get('/student');
   assert.equal(response.status, 302);
@@ -255,9 +245,6 @@ test('staff and admin login reach their own dashboards', async () => {
   assert.equal(secondStudent.status, 302);
 });
 
-// ---------------------------------------------------------------------------
-// 2. Authorization (role-based)
-// ---------------------------------------------------------------------------
 test('student cannot open admin pages (403)', async () => {
   const response = await student.get('/admin');
   assert.equal(response.status, 403);
@@ -278,9 +265,6 @@ test('admin cannot open student-only pages (403)', async () => {
   assert.equal(response.status, 403);
 });
 
-// ---------------------------------------------------------------------------
-// 3. Complaint lifecycle
-// ---------------------------------------------------------------------------
 let createdTicket;
 
 test('student creates a complaint and receives a ticket id', async () => {
@@ -436,9 +420,6 @@ test('comments are stored and shown on the page', async () => {
   assert.equal(comment.type, 'comment');
 });
 
-// ---------------------------------------------------------------------------
-// 4. Search, filtering, sorting, pagination
-// ---------------------------------------------------------------------------
 test('admin can search complaints', async () => {
   const response = await admin.get('/admin/complaints?search=tube light');
   assert.equal(response.status, 200);
@@ -463,9 +444,6 @@ test('pagination returns page 2 without errors', async () => {
   assert.equal(firstPage.status, 200);
 });
 
-// ---------------------------------------------------------------------------
-// 5. REST API (JSON)
-// ---------------------------------------------------------------------------
 test('GET /api/complaints returns JSON with pagination info', async () => {
   const response = await admin.get('/api/complaints?page=1');
   assert.equal(response.status, 200);
@@ -529,9 +507,6 @@ test('DELETE /api/complaints is admin only', async () => {
   assert.equal(gone, null);
 });
 
-// ---------------------------------------------------------------------------
-// 6. Logout
-// ---------------------------------------------------------------------------
 test('logout destroys the session', async () => {
   const logout = await student.post('/auth/logout');
   assert.equal(logout.status, 302);

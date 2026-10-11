@@ -1,12 +1,7 @@
 /**
  * controllers/adminController.js
- * --------------------------------------------------------------------------
  * Everything the admin sees: overview dashboard, full complaint list,
  * user management, analytics and feedback.
- *
- * The analytics page uses MongoDB aggregation pipelines. Every pipeline is
- * commented step by step - they are the most "interview valuable" queries
- * in the project.
  */
 const Complaint = require('../models/Complaint');
 const Comment = require('../models/Comment');
@@ -36,7 +31,6 @@ async function countByStatus(baseFilter = {}) {
   return countsByStatus;
 }
 
-// GET /admin
 async function dashboard(req, res, next) {
   try {
     // Run the escalation check when the dashboard opens so the admin always
@@ -79,7 +73,6 @@ async function dashboard(req, res, next) {
   }
 }
 
-// GET /admin/complaints
 async function listComplaints(req, res, next) {
   try {
     const { filter, sort, page, limit, skip } = buildComplaintQuery(req.query);
@@ -113,9 +106,6 @@ async function listComplaints(req, res, next) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// User management
-// ---------------------------------------------------------------------------
 
 function validateNewUser(body) {
   const errors = [];
@@ -137,7 +127,6 @@ function validateNewUser(body) {
   return errors;
 }
 
-// GET /admin/users
 async function users(req, res, next) {
   try {
     const roleFilter = ['student', 'staff', 'admin'].includes(req.query.role)
@@ -251,21 +240,15 @@ async function toggleUserStatus(req, res, next) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Analytics
-// ---------------------------------------------------------------------------
 
-// GET /admin/analytics
 async function analytics(req, res, next) {
   try {
-    // ---- 1. complaints per category (doughnut chart) ----------------------
     const byCategory = await Complaint.aggregate([
       { $group: { _id: '$category', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
       { $project: { _id: 0, category: '$_id', count: 1 } },
     ]);
 
-    // ---- 2. complaints per status (bar chart) -----------------------------
     const statusRows = await Complaint.aggregate([
       { $group: { _id: '$status', count: { $sum: 1 } } },
       { $project: { _id: 0, status: '$_id', count: 1 } },
@@ -275,7 +258,6 @@ async function analytics(req, res, next) {
       count: (statusRows.find((row) => row.status === status) || {}).count || 0,
     }));
 
-    // ---- 3. complaints per month, last 6 months (line chart) --------------
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setDate(1);
     sixMonthsAgo.setHours(0, 0, 0, 0);
@@ -303,7 +285,6 @@ async function analytics(req, res, next) {
       monthCounts.push(found ? found.count : 0);
     }
 
-    // ---- 4. average resolution time per category (table) ------------------
     const resolutionByCategory = await Complaint.aggregate([
       { $match: { resolvedAt: { $ne: null } } }, // only complaints that were resolved
       {
@@ -318,7 +299,6 @@ async function analytics(req, res, next) {
       { $project: { _id: 0, category: '$_id', avgHours: 1, resolvedCount: 1 } },
     ]);
 
-    // ---- 5. overall stats -------------------------------------------------
     const overallResolution = await Complaint.aggregate([
       { $match: { resolvedAt: { $ne: null } } },
       {
@@ -360,7 +340,6 @@ async function analytics(req, res, next) {
   }
 }
 
-// GET /admin/feedback
 async function feedbackList(req, res, next) {
   try {
     const feedbackItems = await Feedback.find()

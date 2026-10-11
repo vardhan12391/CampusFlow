@@ -277,7 +277,7 @@ instead of after a token expiry.
 **401 vs 403 vs 302** (interview favourite):
 - `302 → /auth/login` — a browser with no session (send it to the login page)
 - `401` — an API client with no session (JSON clients cannot "see" a redirect)
-- `403` — we know who you are, but this route is not yours
+- `403` — the requester is authenticated, but not allowed on this route
 
 ---
 
@@ -306,7 +306,7 @@ Responses always follow the same envelope:
 { "success": false, "message": "Validation failed", "errors": [{ "field": "title", "message": "Title is required." }] }
 ```
 
-Try it from the browser console (you must be logged in first):
+It can also be called from the browser console (a logged-in session is required first):
 
 ```js
 const r = await fetch('/api/complaints?status=Open', { credentials: 'same-origin' });
@@ -346,7 +346,7 @@ Atlas URI).
 
 ```bash
 # 1. get the code
-git clone https://github.com/<you>/campusflow.git
+git clone https://github.com/<username>/campusflow.git
 cd campusflow
 
 # 2. install dependencies
@@ -375,7 +375,7 @@ vendored in `public/vendor/` so every page styles instantly (even offline).
 | ---------------- | ---------------------------------------------------- | -------------------------------------------- |
 | `PORT`           | `3000`                                               | Port the server listens on (host injects it in production) |
 | `MONGODB_URI`    | `mongodb://127.0.0.1:27017/campusflow`               | Local DB; use `mongodb+srv://…` for Atlas     |
-| `SESSION_SECRET` | `9f2c…` (long random string)                         | Signs the session cookie — **never commit it** |
+| `SESSION_SECRET` | `9f2c…` (long random string)                         | Signs the session cookie — **must never be committed** |
 | `ESCALATION_HOURS` | `48`                                               | Open High/Urgent complaints older than this get escalated |
 | `NODE_ENV`       | `development` / `production`                         | `production` enables secure cookies + trust proxy |
 
@@ -388,7 +388,7 @@ npm start        # normal start
 npm run dev      # auto-restart on file changes (node --watch)
 ```
 
-Open <http://localhost:3000> and log in with a seeded account:
+The app runs at <http://localhost:3000>; seeded accounts are:
 
 | Role    | Email                  | Password    |
 | ------- | ---------------------- | ----------- |
@@ -396,7 +396,7 @@ Open <http://localhost:3000> and log in with a seeded account:
 | Staff   | `staff@campusflow.edu` | `password123` |
 | Student | `rahul@campusflow.edu` | `password123` |
 
-(Or click **Register** and create your own student account.)
+(Or click **Register** to create a new student account.)
 
 ---
 
@@ -415,8 +415,8 @@ npm run seed
 - 23 feedback entries with 1–5 star ratings
 - The ticket counter, so new complaints continue at `CF-1043`
 
-`npm run seed` **wipes those collections first** — never point it at data you
-care about. That is also why the tests use their own database
+`npm run seed` **wipes those collections first**, so it must never be run
+against data that matters. That is also why the tests use their own database
 (`campusflow_test`).
 
 ---
@@ -431,7 +431,7 @@ npm test
 - Framework: Node's built-in `node:test` — no test dependency to install.
 - Each test drives the **real HTTP server** with `fetch()` and a cookie jar,
   exactly like a browser: request → middleware → controller → MongoDB → response.
-- Runs on port **3100** against database **`campusflow_test`**, so your seeded
+- Runs on port **3100** against database **`campusflow_test`**, so the seeded
   dev data is untouched.
 - Covers: registration/login/logout, 401/403/404 guards, the full complaint
   lifecycle (create → duplicate 409 → assign → priority → workflow → reopen →
@@ -465,17 +465,10 @@ test('duplicate detection warns before creating a second complaint', async () =>
 
 ---
 
-## 15. Deployment
 
-See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the step-by-step free-tier guide
-(MongoDB Atlas + Render), production environment variables, seeding an empty
-database, the post-deploy smoke test and known free-tier limitations.
+## 15. Screenshots
 
----
-
-## 16. Screenshots
-
-Capture these pages after `npm run seed` and drop the images into
+These pages are captured after `npm run seed`, with the images saved into
 `docs/screenshots/`:
 
 | File                    | Page                                                     |
@@ -492,12 +485,12 @@ Capture these pages after `npm run seed` and drop the images into
 | `users.png`             | `/admin/users` — role & status management                |
 
 Fastest way to capture them (Chrome → DevTools → `Cmd/Ctrl+Shift+P` →
-"Capture full size screenshot"), or ask your agent to open the preview panel
+"Capture full size screenshot"), or an agent can open the preview panel
 and screenshot each route.
 
 ---
 
-## 17. Future Improvements
+## 16. Future Improvements
 
 1. **Image storage in the cloud** — uploads currently use the local disk, which
    is wiped on redeploy. Move to S3 / Cloudinary with signed upload URLs.
@@ -521,78 +514,9 @@ and screenshot each route.
 
 ---
 
-## 18. Interview Talking Points
 
-> Full version with 28 questions and answers: **[INTERVIEW_PREP.md](INTERVIEW_PREP.md)**.
-> Line-by-line module walkthroughs: **[CODE_EXPLANATIONS.md](CODE_EXPLANATIONS.md)**.
 
-**The 60-second pitch**
-> "CampusFlow is a full-stack complaint-management system for a college:
-> students file issues with photo proof, staff work them through a status
-> workflow, and admins watch it all on a Chart.js dashboard. It's
-> Express + MongoDB + EJS in classic MVC — deliberately no frontend framework —
-> so I can explain every line. The interesting parts are an atomic ticket
-> counter, duplicate detection before creation, role-based authorization with
-> different status transitions per role, and a background escalation job."
-
-**Highest-value topics to prepare**
-
-- **Why MVC?** separation of concerns; each layer is testable and replaceable.
-- **The request lifecycle** — middleware order, route, controller, model, view.
-- **How login works** — bcrypt hash, `select:false`, store only the session id,
-  regenerate the session (fixation), and why the user is re-read every request.
-- **401 vs 403 vs 302** and where each is returned.
-- **Atomic ticket IDs** — why `countDocuments()` would race, how
-  `findOneAndUpdate` + `$inc` + `upsert` makes it safe.
-- **Why indexes** — and the four indexes in the Complaint model, each tied to a
-  real query.
-- **Denormalisation trade-offs** — `authorName` copied onto comments so
-  timelines survive account deletion; `priorityRank` kept in sync by hooks.
-- **Duplicate detection** — an index-backed query plus an honest 409 conflict
-  response, with `confirmDuplicate=yes` to force creation.
-- **Aggregation pipelines** — `$group`, `$match`, `$project`, `$avg`, and why
-  missing months are filled with zeros before rendering a line chart.
-- **Security** — CSP via Helmet, HttpOnly/SameSite cookies, escaped regexes,
-  image-only Multer with random filenames, no user enumeration, CSRF plans.
-- **Error handling** — one `errorHandler` that maps Mongoose `ValidationError`,
-  duplicate key `11000`, `CastError`, and returns JSON for `/api` vs HTML pages.
-- **Testing** — built-in runner, real HTTP + cookie jar, separate DB so tests
-  can never destroy dev data.
-- **Trade-offs you'd change at scale** — move uploads to S3, escalation to a
-  queue, add rate limiting, real notifications.
-
----
-
-## 19. Suggested Git History
-
-Small, meaningful commits — each one is a working increment you can explain:
-
-```text
-chore: initialise project, add express + mongoose + ejs, dotenv and .gitignore
-feat: scaffold MVC folders and wire the request pipeline in app.js
-feat: add User model with bcrypt hashing and unique email index
-feat: implement register / login / logout with express-session
-feat: add role middleware and protect the student, staff and admin areas
-feat: add Complaint model with workflow enums, indexes and priorityRank hooks
-feat: add Counter model for atomic CF-#### ticket numbers
-feat: student complaint form with multer image upload
-feat: server-side validation with express-validator
-feat: duplicate complaint detection with 409 conflict response
-feat: complaint detail page with activity timeline and comments
-feat: staff workflow - accept, assign, progress, resolve
-feat: admin assignment, priority change and user management
-feat: shared query builder - search, filter, sort, pagination
-feat: admin analytics with MongoDB aggregations and Chart.js
-feat: feedback ratings and escalation background job
-feat: error pages, flash messages and helmet CSP
-test: end-to-end suite for auth, roles, lifecycle and the REST API
-docs: add README, DEPLOYMENT guide and interview prep
-chore: add seed script with realistic demo data
-```
-
----
-
-## 20. Project Structure
+## 17. Project Structure
 
 ```
 campusflow/
@@ -621,11 +545,8 @@ campusflow/
 ├── tests/app.test.js         # 34 end-to-end tests (own DB, own port)
 ├── uploads/                  # user photos (git-ignored)
 ├── DEPLOYMENT.md  INTERVIEW_PREP.md  CODE_EXPLANATIONS.md
-└── .env.example              # copy to .env — never commit .env
+└── .env.example              # template for .env — .env is never committed
 ```
 
 ---
 
-## License
-
-MIT — free to use for your portfolio.

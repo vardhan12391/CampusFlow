@@ -1,6 +1,5 @@
 /**
  * middleware/auth.js
- * --------------------------------------------------------------------------
  * Session-based authentication.
  *
  * On login we only store the user's id in the session:
@@ -21,7 +20,6 @@ async function loadUser(req, res, next) {
         req.user = user;
         res.locals.currentUser = user;
       } else {
-        // account deleted or deactivated -> force logout
         req.session.destroy(() => {});
       }
     }

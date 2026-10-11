@@ -1,6 +1,5 @@
 /**
  * config/db.js
- * --------------------------------------------------------------------------
  * Responsible for ONE thing: opening the connection to MongoDB.
  *
  * We keep it in its own file so app.js stays readable, and so the same
@@ -15,7 +14,6 @@ async function connectDB() {
       throw new Error('MONGODB_URI is missing. Copy .env.example to .env first.');
     }
 
-    // mongoose.connect returns a connection promise
     await mongoose.connect(uri);
 
     console.log('MongoDB connected:', mongoose.connection.name);

@@ -1,6 +1,5 @@
 /**
  * utils/complaintQuery.js
- * --------------------------------------------------------------------------
  * One shared place that converts the query string of a complaint list page
  * into a MongoDB query.
  *
@@ -35,7 +34,6 @@ function escapeRegex(text) {
 function buildComplaintQuery(query = {}, options = {}) {
   const filter = { ...(options.baseFilter || {}) };
 
-  // --- search across ticket id, title and location ------------------------
   const search = (query.search || '').trim();
   if (search) {
     const textMatch = new RegExp(escapeRegex(search), 'i');
@@ -47,18 +45,15 @@ function buildComplaintQuery(query = {}, options = {}) {
     ];
   }
 
-  // --- exact-match filters ------------------------------------------------
   if (query.status) filter.status = query.status;
   if (query.category) filter.category = query.category;
   if (query.priority) filter.priority = query.priority;
   if (query.escalated === 'true') filter.isEscalated = true;
 
-  // --- partial-match filter (location typed by the user) ------------------
   if (query.location) {
     filter.location = new RegExp(escapeRegex(query.location.trim()), 'i');
   }
 
-  // --- "who is it assigned to?" (admin filter) ----------------------------
   if (query.assignedTo === 'unassigned') {
     filter.assignedTo = null;
   } else if (query.assignedTo) {
@@ -67,10 +62,8 @@ function buildComplaintQuery(query = {}, options = {}) {
     }
   }
 
-  // --- sorting ------------------------------------------------------------
   const sort = SORT_OPTIONS[query.sort] || SORT_OPTIONS.newest;
 
-  // --- pagination ---------------------------------------------------------
   const parsedPage = parseInt(query.page, 10);
   const page = Number.isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
   const skip = (page - 1) * PAGE_SIZE;

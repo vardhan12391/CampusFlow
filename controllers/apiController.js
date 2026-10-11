@@ -1,6 +1,5 @@
 /**
  * controllers/apiController.js
- * --------------------------------------------------------------------------
  * The JSON / REST side of CampusFlow.
  *
  * The HTML pages and these endpoints share the SAME models, middleware and
@@ -8,15 +7,6 @@
  *
  *   HTML route  ->  res.render('view', data)      (server renders the page)
  *   API route   ->  res.status(201).json(data)    (client renders the page)
- *
- * Status codes used here:
- *   200 OK           request succeeded
- *   201 Created      a new resource was created
- *   400 Bad Request  the client sent invalid data
- *   401 Unauthorized nobody is logged in
- *   403 Forbidden    logged in, but not allowed
- *   404 Not Found    the resource does not exist
- *   500 Server Error something broke on our side
  */
 const fs = require('fs');
 const path = require('path');
@@ -105,7 +95,6 @@ async function create(req, res, next) {
 
     const complaint = await saveComplaintRecord({ data: req.body, user: req.user });
 
-    // 201 + Location header = "your resource was created, here is where it lives"
     res.status(201).location(`/api/complaints/${complaint.ticketId}`).json({
       success: true,
       message: 'Complaint created.',
