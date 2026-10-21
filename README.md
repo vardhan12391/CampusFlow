@@ -12,7 +12,7 @@ written so a beginner can explain it line by line in an interview.
 
 ## Live Demo
 
-[Click here to view CampusFlow](https://campusflow-y6o6.onrender.com/)
+https://campusflow-y6o6.onrender.com/
 
 ## Table of Contents
 
